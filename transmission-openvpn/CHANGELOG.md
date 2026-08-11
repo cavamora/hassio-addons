@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.12
+
+- Move the add-on metadata URL to the umbrella Home Assistant add-ons repository: `cavamora/hassio-addons`.
+- No configuration or data migration is required when switching repositories because the add-on slug remains `transmission_openvpn`.
+
 ## 1.0.11
 
 - Use Transmission's built-in default web UI by default and automatically fall back to it when old saved options request `transmission-web-control`. This avoids broken add-torrent/path behavior such as `undefined` download locations with the current upstream image.

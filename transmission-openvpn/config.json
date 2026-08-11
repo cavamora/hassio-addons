@@ -1,9 +1,9 @@
 {
   "name": "Transmission OpenVPN",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "slug": "transmission_openvpn",
   "description": "Transmission BitTorrent client routed through OpenVPN, using haugene/transmission-openvpn.",
-  "url": "https://github.com/cavamora/ha-addon-transmission-openvpn/tree/main/transmission-openvpn",
+  "url": "https://github.com/cavamora/hassio-addons/tree/main/transmission-openvpn",
   "arch": ["amd64", "aarch64"],
   "startup": "services",
   "boot": "auto",
