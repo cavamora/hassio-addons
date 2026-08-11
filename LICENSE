@@ -1,0 +1,10 @@
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+This repository is licensed under the GNU General Public License v3.0.
+
+It is a Home Assistant add-on wrapper around haugene/transmission-openvpn:
+https://github.com/haugene/docker-transmission-openvpn
+
+The full GPL-3.0 license text is available at:
+https://www.gnu.org/licenses/gpl-3.0.txt
