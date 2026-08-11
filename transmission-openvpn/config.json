@@ -1,6 +1,6 @@
 {
   "name": "Transmission OpenVPN",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "slug": "transmission_openvpn",
   "description": "Transmission BitTorrent client routed through OpenVPN, using haugene/transmission-openvpn.",
   "url": "https://github.com/cavamora/hassio-addons/tree/main/transmission-openvpn",
@@ -29,7 +29,7 @@
     "LOCAL_NETWORK": "192.168.0.0/16",
     "TRANSMISSION_RPC_USERNAME": "",
     "TRANSMISSION_RPC_PASSWORD": "",
-    "TRANSMISSION_WEB_UI": "default",
+    "TRANSMISSION_WEB_UI": "transmission-web-control",
     "TRANSMISSION_DOWNLOAD_DIR": "/downloads/completed",
     "TRANSMISSION_INCOMPLETE_DIR": "/downloads/incomplete",
     "TRANSMISSION_WATCH_DIR": "/downloads/watch",

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.13
+
+- Respect the selected `TRANSMISSION_WEB_UI` option again, including `transmission-web-control`, instead of forcing the built-in default UI.
+- Revert the NordVPN ping-check patch from `1.0.10`; the earlier failure was a restart/transient event, and keeping upstream behavior is safer.
+
 ## 1.0.12
 
 - Move the add-on metadata URL to the umbrella Home Assistant add-ons repository: `cavamora/hassio-addons`.
