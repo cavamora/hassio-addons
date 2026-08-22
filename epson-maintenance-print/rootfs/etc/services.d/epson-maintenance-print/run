@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bashio
+mkdir -p /run/cups /var/run/cups
+cupsd -f &
+exec python3 /app/main.py

@@ -1,0 +1,33 @@
+name: Epson Maintenance Print
+version: 0.1.0
+slug: epson_maintenance_print
+description: Prints a periodic maintenance page to an Epson printer to prevent ink
+  drying
+url: https://github.com/cavamora/hassio-addons/tree/main/epson-maintenance-print
+arch:
+- amd64
+- aarch64
+startup: services
+boot: auto
+init: false
+map:
+- share:rw
+ports:
+  8080/tcp: 8099
+webui: http://[HOST]:[PORT:8080]
+options:
+  printer_host: 192.168.88.116
+  printer_queue: epson_l3250
+  printer_uri: ''
+  printer_model: escpr:0/cups/model/epson-inkjet-printer-escpr/Epson-L3250_Series-epson-escpr-en.ppd
+  page_title: Epson L3250 - manutenção automática
+  dry_run: false
+  debug: false
+schema:
+  printer_host: str
+  printer_queue: str
+  printer_uri: str?
+  printer_model: str
+  page_title: str
+  dry_run: bool
+  debug: bool
