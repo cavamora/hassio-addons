@@ -1,3 +1,7 @@
+## 3.4.3
+
+- Fork fix: pass rclone RC credentials through `RCLONE_RC_USER` / `RCLONE_RC_PASS` environment variables instead of command-line arguments, reducing exposure in process-list and argv-based log collection.
+
 ## 3.4.2
 
 - Fork change: add configurable rclone RC/Web UI authentication through `rc_auth_enabled`, `rc_user`, and `rc_pass`.

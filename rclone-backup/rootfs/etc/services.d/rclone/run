@@ -22,8 +22,14 @@ if bashio::config.true 'rc_auth_enabled'; then
     exit 1
   fi
 
+  # Export credentials instead of passing --rc-user/--rc-pass on the command line.
+  # This avoids exposing the password in process listings and log collectors that
+  # capture argv. Do not log rc_pass.
+  export RCLONE_RC_USER="${rc_user}"
+  export RCLONE_RC_PASS="${rc_pass}"
+
   bashio::log.info "Rclone Web GUI authentication is enabled for user: ${rc_user}"
-  exec rclone rcd --rc-user "${rc_user}" --rc-pass "${rc_pass}" "${RCLONE_RC_ARGS[@]}"
+  exec rclone rcd "${RCLONE_RC_ARGS[@]}"
 else
   bashio::log.warning "Rclone Web GUI authentication is disabled; relying on Home Assistant Ingress only."
   exec rclone rcd --rc-no-auth "${RCLONE_RC_ARGS[@]}"
