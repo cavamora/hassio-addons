@@ -1,3 +1,7 @@
+## 3.4.5
+
+- Fork fix: redact rclone's Web GUI startup URL before it reaches the add-on log, because rclone embeds both the RC password and `login_token` in that convenience notice.
+
 ## 3.4.4
 
 - Fork fix: remove command-line credential flag names from the run-script comment to avoid noisy secret-scanner/log matches.

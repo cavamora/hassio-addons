@@ -13,6 +13,19 @@ RCLONE_RC_ARGS=(
   --rc-files "/usr/share/rclone-webui-react"
 )
 
+run_rclone_rc() {
+  # rclone prints a convenience Web GUI URL containing basic-auth credentials
+  # and login_token even when credentials are supplied via environment variables.
+  # Filter that single startup notice before it reaches the add-on log.
+  rclone rcd "${RCLONE_RC_ARGS[@]}" "$@" 2>&1 | while IFS= read -r line; do
+    if [[ "${line}" == *"Web GUI is not automatically opening browser. Navigate to http"* ]]; then
+      line="${line%%Navigate to http*}Navigate to http://<redacted>/ to use."
+    fi
+    printf '%s\n' "${line}"
+  done
+  return "${PIPESTATUS[0]}"
+}
+
 if bashio::config.true 'rc_auth_enabled'; then
   rc_user="$(bashio::config 'rc_user')"
   rc_pass="$(bashio::config 'rc_pass')"
@@ -29,8 +42,8 @@ if bashio::config.true 'rc_auth_enabled'; then
   export RCLONE_RC_PASS="${rc_pass}"
 
   bashio::log.info "Rclone Web GUI authentication is enabled for user: ${rc_user}"
-  exec rclone rcd "${RCLONE_RC_ARGS[@]}"
+  run_rclone_rc
 else
   bashio::log.warning "Rclone Web GUI authentication is disabled; relying on Home Assistant Ingress only."
-  exec rclone rcd --rc-no-auth "${RCLONE_RC_ARGS[@]}"
+  run_rclone_rc --rc-no-auth
 fi
