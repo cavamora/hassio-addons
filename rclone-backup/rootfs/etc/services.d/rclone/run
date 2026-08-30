@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start the Rclone Web GUI
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# ==============================================================================
+
+bashio::log.info "Starting Rclone Web GUI..."
+
+RCLONE_RC_ARGS=(
+  --rc-web-gui-no-open-browser
+  --rc-addr ":8099"
+  --rc-allow-origin "172.30.32.2"
+  --rc-files "/usr/share/rclone-webui-react"
+)
+
+if bashio::config.true 'rc_auth_enabled'; then
+  rc_user="$(bashio::config 'rc_user')"
+  rc_pass="$(bashio::config 'rc_pass')"
+
+  if [[ -z "${rc_user}" || -z "${rc_pass}" || "${rc_pass}" == "changeme" ]]; then
+    bashio::log.fatal "rc_auth_enabled is true, but rc_user/rc_pass is empty or rc_pass is still 'changeme'. Set a real Web UI password in the add-on configuration."
+    exit 1
+  fi
+
+  bashio::log.info "Rclone Web GUI authentication is enabled for user: ${rc_user}"
+  exec rclone rcd --rc-user "${rc_user}" --rc-pass "${rc_pass}" "${RCLONE_RC_ARGS[@]}"
+else
+  bashio::log.warning "Rclone Web GUI authentication is disabled; relying on Home Assistant Ingress only."
+  exec rclone rcd --rc-no-auth "${RCLONE_RC_ARGS[@]}"
+fi

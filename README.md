@@ -22,6 +22,13 @@ Generates a low-ink PNG maintenance page and prints it to an Epson L3250 through
 
 Use this to periodically exercise black/cyan/magenta/yellow channels without Epson Cloud or external services.
 
+
+### Rclone Backup
+
+Scheduled rclone runner for Home Assistant OS, forked from [`jcwillox/hassio-rclone-backup`](https://github.com/jcwillox/hassio-rclone-backup), with configurable rclone RC/Web UI authentication.
+
+Use it for SMB/NAS/TP-Link USB disk → encrypted Google Drive jobs. Configure `rc_auth_enabled`, `rc_user`, and `rc_pass` before starting.
+
 ### Transmission OpenVPN
 
 Transmission BitTorrent routed through OpenVPN using the upstream [`haugene/transmission-openvpn`](https://github.com/haugene/docker-transmission-openvpn) image.

@@ -1,0 +1,78 @@
+---
+name: Rclone Backup
+version: 3.4.2
+slug: rclone_backup
+description: Automatically sync backup to remote locations using rclone
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+init: false
+url: https://github.com/cavamora/hassio-addons
+homeassistant_api: true
+ingress: true
+panel_icon: mdi:cloud-sync
+map:
+  - addons:rw
+  - addon_config:rw
+  - all_addon_configs:rw
+  - backup:rw
+  - homeassistant_config:rw
+  - media:rw
+  - share:rw
+  - ssl:ro
+options:
+  jobs:
+    - name: Sync Daily Backups
+      schedule: 10 4 * * *
+      command: sync
+      sources:
+        - "/backup"
+      destination: google:/Backup/Home Assistant
+      include: []
+      exclude: []
+      flags: {}
+  dry_run: true
+  config_path: "/homeassistant/rclone.conf"
+  rc_auth_enabled: true
+  rc_user: admin
+  rc_pass: changeme
+schema:
+  jobs:
+    - name: str?
+      schedule: str?
+      command: str
+      source: str?
+      sources:
+        - str?
+      destination: str?
+      destinations:
+        - str?
+      include:
+        - str?
+      exclude:
+        - str?
+      flags: "match({(('[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))(, *?'[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))*)?})?"
+      extra_flags:
+        - str?
+  dry_run: bool?
+  flags: "match({(('[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))(, *?'[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))*)?})?"
+  extra_flags:
+    - str?
+  run_once: bool?
+  config_path: str?
+  rclone_config: str?
+  no_rename: bool?
+  no_unrename: bool?
+  no_slugify: bool?
+  log_level: list(debug|info|warning|error|fatal)?
+  rc_auth_enabled: bool?
+  rc_user: str?
+  rc_pass: password?
+devices:
+  - /dev/fuse
+privileged:
+  - SYS_ADMIN
+apparmor: false
