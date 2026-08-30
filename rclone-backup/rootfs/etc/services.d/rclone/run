@@ -27,23 +27,13 @@ run_rclone_rc() {
 }
 
 if bashio::config.true 'rc_auth_enabled'; then
-  rc_user="$(bashio::config 'rc_user')"
-  rc_pass="$(bashio::config 'rc_pass')"
-
-  if [[ -z "${rc_user}" || -z "${rc_pass}" || "${rc_pass}" == "changeme" ]]; then
-    bashio::log.fatal "rc_auth_enabled is true, but rc_user/rc_pass is empty or rc_pass is still 'changeme'. Set a real Web UI password in the add-on configuration."
-    exit 1
-  fi
-
-  # Export credentials instead of passing them on the command line.
-  # This avoids exposing the password in process listings and log collectors that
-  # capture argv. Do not log rc_pass.
-  export RCLONE_RC_USER="${rc_user}"
-  export RCLONE_RC_PASS="${rc_pass}"
-
-  bashio::log.info "Rclone Web GUI authentication is enabled for user: ${rc_user}"
-  run_rclone_rc
+  # HA Ingress opens the Web UI at / and cannot pass rclone's generated
+  # login_token. Enabling rclone RC auth therefore breaks the Ingress login flow,
+  # and rclone also prints that token in its startup URL. Keep the Web UI usable
+  # and avoid secret-bearing startup URLs by relying on Home Assistant Ingress.
+  bashio::log.warning "rc_auth_enabled is ignored for the Web GUI; relying on Home Assistant Ingress authentication to avoid rclone login-token leaks."
 else
   bashio::log.warning "Rclone Web GUI authentication is disabled; relying on Home Assistant Ingress only."
-  run_rclone_rc --rc-no-auth
 fi
+
+run_rclone_rc --rc-no-auth

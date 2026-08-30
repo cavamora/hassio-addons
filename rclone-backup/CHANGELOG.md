@@ -1,3 +1,7 @@
+## 3.4.6
+
+- Fork fix: restore Home Assistant Ingress Web UI login by running rclone RC without rclone's own login-token auth. Existing `rc_auth_enabled` settings are ignored for the Web GUI because HA Ingress opens `/` without rclone's generated token, and that token is exactly what leaked in the startup log.
+
 ## 3.4.5
 
 - Fork fix: redact rclone's Web GUI startup URL before it reaches the add-on log, because rclone embeds both the RC password and `login_token` in that convenience notice.
