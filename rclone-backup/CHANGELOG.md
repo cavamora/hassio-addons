@@ -1,3 +1,7 @@
+## 3.4.4
+
+- Fork fix: remove command-line credential flag names from the run-script comment to avoid noisy secret-scanner/log matches.
+
 ## 3.4.3
 
 - Fork fix: pass rclone RC credentials through `RCLONE_RC_USER` / `RCLONE_RC_PASS` environment variables instead of command-line arguments, reducing exposure in process-list and argv-based log collection.
