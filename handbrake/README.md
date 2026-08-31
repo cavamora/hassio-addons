@@ -46,6 +46,7 @@ DVD/BD sources supported by the upstream image include ISO files and folders con
 - If enabling `web_file_manager`, it is restricted to media/watch/output paths and explicitly denied from `/config`, `/data`, `/root`, `/etc`, `/proc`, `/sys`, and `/dev`.
 - This add-on can consume significant CPU. It defaults to `boot: manual` so it does not start automatically after host boot.
 - The add-on does not request privileged mode or host device access in phase 1.
+- The default `user_id`/`group_id` is `0:0` because Home Assistant Network Storage/CIFS media mounts can appear as `uid=0,gid=0,dir_mode=0755`; a non-root app user cannot write to those folders. Keep raw ports, VNC, and web terminal disabled when using this default. If your media path is local ext4 or mounted writable for UID 1000, you can switch back to `1000:1000`.
 
 ## First test
 

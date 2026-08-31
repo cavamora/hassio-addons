@@ -68,6 +68,12 @@ OUTPUT_PATH="$(safe_path_option output_path /media/MEDIA/HandBrake/output)"
 # Supervisor-provided /media or /share paths directly instead.
 mkdir -p "$WATCH_PATH" "$OUTPUT_PATH"
 
+# Best effort for normal ext4 folders. CIFS mounts created by Home Assistant
+# Network Storage may ignore chown/chmod and stay uid=0 mode=0755; in that case
+# the configured USER_ID must be 0 to write there.
+chown "$USER_ID:$GROUP_ID" "$WATCH_PATH" "$OUTPUT_PATH" 2>/dev/null || true
+chmod u+rwx "$WATCH_PATH" "$OUTPUT_PATH" 2>/dev/null || true
+
 export HANDBRAKE_GUI=1
 export HANDBRAKE_DEBUG="$(read_bool_as_int debug false)"
 export HANDBRAKE_GUI_QUEUE_STARTUP_ACTION=NONE

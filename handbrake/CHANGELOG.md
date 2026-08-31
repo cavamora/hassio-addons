@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Default HandBrake runtime user/group to `0:0` so the automatic converter can write to Home Assistant CIFS media mounts that are exposed as `uid=0,gid=0,dir_mode=0755`.
+- Add best-effort startup `chown`/`chmod` for local `/media` or `/share` folders while tolerating CIFS mounts that ignore ownership changes.
+
 ## 0.1.2
 
 - Fix startup on HAOS by not replacing upstream `/config`, `/storage`, `/watch`, or `/output` paths with symlinks; some are Docker volume mount points and cannot be removed at runtime.
