@@ -2,7 +2,6 @@
 set -eu
 
 OPTIONS=/data/options.json
-APP_CONFIG=/data/handbrake-config
 
 read_option() {
   key="$1"
@@ -55,34 +54,6 @@ safe_path_option() {
   esac
 }
 
-replace_with_symlink() {
-  link_path="$1"
-  target_path="$2"
-
-  mkdir -p "$target_path"
-
-  if [ -L "$link_path" ]; then
-    current_target="$(readlink "$link_path")"
-    if [ "$current_target" = "$target_path" ]; then
-      return 0
-    fi
-    rm -f "$link_path"
-  elif [ -e "$link_path" ]; then
-    if [ -d "$link_path" ]; then
-      if [ "$link_path" = "/config" ] && [ ! -e "$target_path/.ha-addon-config-initialized" ]; then
-        cp -a "$link_path"/. "$target_path"/ 2>/dev/null || true
-        touch "$target_path/.ha-addon-config-initialized"
-      fi
-      rm -rf "$link_path"
-    else
-      echo "ERROR: ${link_path} exists and is not a directory or symlink" >&2
-      exit 1
-    fi
-  fi
-
-  ln -s "$target_path" "$link_path"
-}
-
 export TZ="$(read_option TZ America/Sao_Paulo | trim)"
 export USER_ID="$(read_option user_id 1000 | trim)"
 export GROUP_ID="$(read_option group_id 1000 | trim)"
@@ -91,10 +62,11 @@ STORAGE_PATH="$(safe_path_option storage_path /media)"
 WATCH_PATH="$(safe_path_option watch_path /media/MEDIA/HandBrake/watch)"
 OUTPUT_PATH="$(safe_path_option output_path /media/MEDIA/HandBrake/output)"
 
-replace_with_symlink /config "$APP_CONFIG"
-replace_with_symlink /storage "$STORAGE_PATH"
-replace_with_symlink /watch "$WATCH_PATH"
-replace_with_symlink /output "$OUTPUT_PATH"
+# Do not replace /config, /storage, /watch or /output with symlinks. The
+# upstream image declares some of these as Docker volumes, so they can be mount
+# points at runtime and removing them fails with "Resource busy". Use the real
+# Supervisor-provided /media or /share paths directly instead.
+mkdir -p "$WATCH_PATH" "$OUTPUT_PATH"
 
 export HANDBRAKE_GUI=1
 export HANDBRAKE_DEBUG="$(read_bool_as_int debug false)"
@@ -107,8 +79,8 @@ export AUTOMATED_CONVERSION_KEEP_SOURCE="$(read_bool_as_int keep_source true)"
 export AUTOMATED_CONVERSION_OVERWRITE_OUTPUT="$(read_bool_as_int overwrite_output false)"
 export AUTOMATED_CONVERSION_SOURCE_STABLE_TIME="$(read_option source_stable_time 30 | trim)"
 export AUTOMATED_CONVERSION_SOURCE_MIN_DURATION="$(read_option source_min_duration 10 | trim)"
-export AUTOMATED_CONVERSION_WATCH_DIR=/watch
-export AUTOMATED_CONVERSION_OUTPUT_DIR=/output
+export AUTOMATED_CONVERSION_WATCH_DIR="$WATCH_PATH"
+export AUTOMATED_CONVERSION_OUTPUT_DIR="$OUTPUT_PATH"
 OUTPUT_SUBDIR="$(read_option output_subdir '' | trim)"
 if [ -n "$OUTPUT_SUBDIR" ]; then
   case "$OUTPUT_SUBDIR" in
@@ -121,7 +93,7 @@ if [ -n "$OUTPUT_SUBDIR" ]; then
 fi
 
 export WEB_FILE_MANAGER="$(read_bool_as_int web_file_manager false)"
-export WEB_FILE_MANAGER_ALLOWED_PATHS=/storage,/watch,/output
+export WEB_FILE_MANAGER_ALLOWED_PATHS="${STORAGE_PATH},${WATCH_PATH},${OUTPUT_PATH}"
 export WEB_FILE_MANAGER_DENIED_PATHS=/config,/data,/root,/etc,/proc,/sys,/dev
 export WEB_TERMINAL="$(read_bool_as_int web_terminal false)"
 export WEB_AUDIO="$(read_bool_as_int web_audio false)"
@@ -138,9 +110,9 @@ fi
 
 cat <<EOF
 Starting HandBrake add-on
-  storage_path=${STORAGE_PATH} -> /storage
-  watch_path=${WATCH_PATH} -> /watch
-  output_path=${OUTPUT_PATH} -> /output
+  storage_path=${STORAGE_PATH}
+  watch_path=${WATCH_PATH}
+  output_path=${OUTPUT_PATH}
   automated_conversion=${AUTOMATED_CONVERSION}
   preset=${AUTOMATED_CONVERSION_PRESET}
   keep_source=${AUTOMATED_CONVERSION_KEEP_SOURCE}

@@ -9,25 +9,25 @@ Home Assistant add-on wrapper around [`jlesage/handbrake`](https://github.com/jl
 - Raw VNC disabled.
 - Web terminal disabled by default.
 - Web file manager disabled by default and restricted to `/storage`, `/watch`, and `/output` when enabled.
-- Persistent HandBrake state under the add-on private `/data/handbrake-config` volume.
+- Upstream HandBrake state remains in the image's `/config` path; phase 1 avoids modifying Docker volume mount points at runtime.
 - Conversion folders under Home Assistant `/media` or `/share` only.
 - Source files kept by default to avoid accidental data loss.
 
 ## Default folders
 
-The wrapper maps these container paths:
+The wrapper configures these paths directly:
 
-| Container path | Default Home Assistant path | Purpose |
+| Option | Default Home Assistant path | Purpose |
 | --- | --- | --- |
-| `/storage` | `/media` | Browseable media root for manual GUI conversions. |
-| `/watch` | `/media/MEDIA/HandBrake/watch` | Drop files/folders here for automatic conversion. |
-| `/output` | `/media/MEDIA/HandBrake/output` | Converted files are written here. |
+| `storage_path` | `/media` | Browseable media root for manual GUI conversions. |
+| `watch_path` | `/media/MEDIA/HandBrake/watch` | Drop files/folders here for automatic conversion. |
+| `output_path` | `/media/MEDIA/HandBrake/output` | Converted files are written here. |
 
 The paths can be changed in the add-on options, but must remain inside `/media` or `/share`. Path traversal such as `..` is rejected at startup.
 
 ## Automatic conversion
 
-When `automated_conversion` is enabled, files placed in `/watch` are converted with the configured HandBrake preset and written to `/output`.
+When `automated_conversion` is enabled, files placed in `watch_path` are converted with the configured HandBrake preset and written to `output_path`.
 
 Defaults:
 

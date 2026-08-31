@@ -1,5 +1,5 @@
 name: HandBrake
-version: 0.1.1
+version: 0.1.2
 slug: handbrake
 description: Convert videos with HandBrake GUI and safe watch-folder automation
 url: https://github.com/cavamora/hassio-addons/tree/main/handbrake
