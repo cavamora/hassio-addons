@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-08-31T12:00:00+00:00",
+  "local_version": "1.0.14",
+  "previous_upstream_commit_sha": "768fec3e6e2779665fce485c211e9dd5c2447741",
+  "previous_upstream_docker_digest": "sha256:e6b30be8008121489994a5d57363c214481171fec11dba31cdb94f428878dd68",
+  "summary": "Upstream v5.5.2 raises Transmission nofile soft limit before launching to mitigate Too many open files errors. No wrapper env/port/volume changes required.",
+  "updated_by": "Hermes manual upstream review after user approval",
+  "upstream_commit_sha": "1bf10174f81914e4d26687cdaf4af99cdb75746c",
+  "upstream_compare_url": "https://github.com/haugene/docker-transmission-openvpn/compare/v5.5.1...v5.5.2",
+  "upstream_docker_digest": "sha256:845fe4f75bb723919dd72363fae3bb7a2a89b6cb6f807c3b0c4073ebfdd42293",
+  "upstream_docker_repo": "haugene/transmission-openvpn",
+  "upstream_docker_tag": "latest",
+  "upstream_github_repo": "haugene/docker-transmission-openvpn",
+  "upstream_release_tag": "v5.5.2",
+  "upstream_release_url": "https://github.com/haugene/docker-transmission-openvpn/releases/tag/v5.5.2"
+}

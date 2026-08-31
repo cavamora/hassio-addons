@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.14
+
+- Rebuild against upstream `haugene/transmission-openvpn` `v5.5.2` / Docker digest `sha256:845fe4f75bb723919dd72363fae3bb7a2a89b6cb6f807c3b0c4073ebfdd42293`.
+- Upstream change raises Transmission's open-files (`nofile`) soft limit before launching, mitigating `Too many open files` / resume-file save errors under heavier torrent activity.
+- No Home Assistant add-on option, storage, VPN/TUN, port, or Web UI behavior changes are expected.
+
 ## 1.0.13
 
 - Respect the selected `TRANSMISSION_WEB_UI` option again, including `transmission-web-control`, instead of forcing the built-in default UI.
