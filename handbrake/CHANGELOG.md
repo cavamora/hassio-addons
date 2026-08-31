@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.4
+
+- Remove the `/share` add-on mount for a narrower security boundary; phase 1 only needs `/media`.
+- Narrow the default GUI/manual storage path from `/media` to `/media/MEDIA/HandBrake`.
+
 ## 0.1.3
 
 - Default HandBrake runtime user/group to `0:0` so the automatic converter can write to Home Assistant CIFS media mounts that are exposed as `uid=0,gid=0,dir_mode=0755`.

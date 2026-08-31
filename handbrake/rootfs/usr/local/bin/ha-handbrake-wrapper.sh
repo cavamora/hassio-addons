@@ -58,7 +58,7 @@ export TZ="$(read_option TZ America/Sao_Paulo | trim)"
 export USER_ID="$(read_option user_id 1000 | trim)"
 export GROUP_ID="$(read_option group_id 1000 | trim)"
 
-STORAGE_PATH="$(safe_path_option storage_path /media)"
+STORAGE_PATH="$(safe_path_option storage_path /media/MEDIA/HandBrake)"
 WATCH_PATH="$(safe_path_option watch_path /media/MEDIA/HandBrake/watch)"
 OUTPUT_PATH="$(safe_path_option output_path /media/MEDIA/HandBrake/output)"
 

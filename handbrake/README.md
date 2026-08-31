@@ -10,7 +10,8 @@ Home Assistant add-on wrapper around [`jlesage/handbrake`](https://github.com/jl
 - Web terminal disabled by default.
 - Web file manager disabled by default and restricted to `/storage`, `/watch`, and `/output` when enabled.
 - Upstream HandBrake state remains in the image's `/config` path; phase 1 avoids modifying Docker volume mount points at runtime.
-- Conversion folders under Home Assistant `/media` or `/share` only.
+- The add-on only mounts Home Assistant `/media`; `/share` is intentionally not mounted in phase 1.
+- Conversion folders default to `/media/MEDIA/HandBrake`.
 - Source files kept by default to avoid accidental data loss.
 
 ## Default folders
@@ -19,11 +20,11 @@ The wrapper configures these paths directly:
 
 | Option | Default Home Assistant path | Purpose |
 | --- | --- | --- |
-| `storage_path` | `/media` | Browseable media root for manual GUI conversions. |
+| `storage_path` | `/media/MEDIA/HandBrake` | Browseable media root for manual GUI conversions. |
 | `watch_path` | `/media/MEDIA/HandBrake/watch` | Drop files/folders here for automatic conversion. |
 | `output_path` | `/media/MEDIA/HandBrake/output` | Converted files are written here. |
 
-The paths can be changed in the add-on options, but must remain inside `/media` or `/share`. Path traversal such as `..` is rejected at startup.
+The paths can be changed in the add-on options, but must remain inside `/media`. Path traversal such as `..` is rejected at startup. The wrapper still accepts `/share` paths for future compatibility, but `/share` is not mounted by the add-on as of phase 1.
 
 ## Automatic conversion
 
