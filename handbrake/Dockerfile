@@ -2,8 +2,6 @@
 # Upstream project: https://github.com/jlesage/docker-handbrake
 FROM jlesage/handbrake:latest
 
-USER root
-
 RUN apk add --no-cache jq \
     && mkdir -p /usr/local/bin
 

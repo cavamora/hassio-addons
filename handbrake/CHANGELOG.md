@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Fix HAOS build by not switching to the named `root` user in the upstream image; BuildKit runs as UID 0 by default, while the upstream image lacks a passwd entry named `root`.
+
 ## 0.1.0
 
 - Initial phase-1 Home Assistant add-on wrapper around `jlesage/handbrake`.
