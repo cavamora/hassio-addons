@@ -1,0 +1,56 @@
+# HandBrake Home Assistant Add-on
+
+Home Assistant add-on wrapper around [`jlesage/handbrake`](https://github.com/jlesage/docker-handbrake) for video conversion with the full HandBrake GUI in a browser and optional watch-folder automation.
+
+## Phase 1 scope
+
+- HandBrake GUI through Home Assistant Ingress on internal port `5800`.
+- No direct host port exposed by default.
+- Raw VNC disabled.
+- Web terminal disabled by default.
+- Web file manager disabled by default and restricted to `/storage`, `/watch`, and `/output` when enabled.
+- Persistent HandBrake state under the add-on private `/data/handbrake-config` volume.
+- Conversion folders under Home Assistant `/media` or `/share` only.
+- Source files kept by default to avoid accidental data loss.
+
+## Default folders
+
+The wrapper maps these container paths:
+
+| Container path | Default Home Assistant path | Purpose |
+| --- | --- | --- |
+| `/storage` | `/media` | Browseable media root for manual GUI conversions. |
+| `/watch` | `/media/MEDIA/HandBrake/watch` | Drop files/folders here for automatic conversion. |
+| `/output` | `/media/MEDIA/HandBrake/output` | Converted files are written here. |
+
+The paths can be changed in the add-on options, but must remain inside `/media` or `/share`. Path traversal such as `..` is rejected at startup.
+
+## Automatic conversion
+
+When `automated_conversion` is enabled, files placed in `/watch` are converted with the configured HandBrake preset and written to `/output`.
+
+Defaults:
+
+- Preset: `General/Very Fast 1080p30`
+- Format: `mp4`
+- Keep source: `true`
+- Overwrite output: `false`
+- Source stable time: `30` seconds
+
+DVD/BD sources supported by the upstream image include ISO files and folders containing `VIDEO_TS` or `BDMV`.
+
+## Security notes
+
+- Keep the direct `5800/tcp` port disabled unless HA Ingress fails.
+- Do not enable `web_terminal` unless needed for troubleshooting.
+- If enabling `web_file_manager`, it is restricted to media/watch/output paths and explicitly denied from `/config`, `/data`, `/root`, `/etc`, `/proc`, `/sys`, and `/dev`.
+- This add-on can consume significant CPU. It defaults to `boot: manual` so it does not start automatically after host boot.
+- The add-on does not request privileged mode or host device access in phase 1.
+
+## First test
+
+1. Install/start the add-on.
+2. Open the HandBrake panel through Home Assistant.
+3. Place a small video file in `/media/MEDIA/HandBrake/watch`.
+4. Confirm the converted `.mp4` appears under `/media/MEDIA/HandBrake/output`.
+5. Check add-on logs and `/config/log/hb/conversion.log` from inside the HandBrake GUI/session if needed.

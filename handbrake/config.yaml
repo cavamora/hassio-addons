@@ -1,0 +1,60 @@
+name: HandBrake
+version: 0.1.0
+slug: handbrake
+description: Convert videos with HandBrake GUI and safe watch-folder automation
+url: https://github.com/cavamora/hassio-addons/tree/main/handbrake
+arch:
+  - amd64
+startup: services
+boot: manual
+init: false
+ingress: true
+ingress_port: 5800
+panel_icon: mdi:movie-cog
+panel_title: HandBrake
+ports:
+  5800/tcp: null
+ports_description:
+  5800/tcp: Optional direct HandBrake Web UI. Keep disabled unless HA Ingress fails.
+webui: http://[HOST]:[PORT:5800]
+map:
+  - media:rw
+  - share:rw
+options:
+  TZ: America/Sao_Paulo
+  user_id: 1000
+  group_id: 1000
+  storage_path: /media
+  watch_path: /media/MEDIA/HandBrake/watch
+  output_path: /media/MEDIA/HandBrake/output
+  automated_conversion: true
+  preset: General/Very Fast 1080p30
+  format: mp4
+  keep_source: true
+  overwrite_output: false
+  source_stable_time: 30
+  source_min_duration: 10
+  output_subdir: ""
+  web_file_manager: false
+  web_terminal: false
+  web_audio: false
+  debug: false
+schema:
+  TZ: str
+  user_id: int
+  group_id: int
+  storage_path: str
+  watch_path: str
+  output_path: str
+  automated_conversion: bool
+  preset: str
+  format: list(mp4|mkv)
+  keep_source: bool
+  overwrite_output: bool
+  source_stable_time: int
+  source_min_duration: int
+  output_subdir: str?
+  web_file_manager: bool
+  web_terminal: bool
+  web_audio: bool
+  debug: bool
