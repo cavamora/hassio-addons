@@ -1,6 +1,6 @@
 ---
 name: Rclone Backup
-version: 3.4.6
+version: 3.4.7
 slug: rclone_backup
 description: Automatically sync backup to remote locations using rclone
 arch:
@@ -35,6 +35,7 @@ options:
       exclude: []
       flags: {}
   dry_run: true
+  verbose: true
   config_path: "/homeassistant/rclone.conf"
   rc_auth_enabled: true
   rc_user: admin
@@ -58,6 +59,7 @@ schema:
       extra_flags:
         - str?
   dry_run: bool?
+  verbose: bool?
   flags: "match({(('[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))(, *?'[^ ]+': *?('([^']|(?<=\\\\)')*'|None|False|True))*)?})?"
   extra_flags:
     - str?

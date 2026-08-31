@@ -41,6 +41,7 @@ type Config struct {
 	NoUnrename   bool     `yaml:"no_unrename"`
 	NoSlugify    bool     `yaml:"no_slugify"`
 	NoEvents     bool     `yaml:"no_events"`
+	Verbose      *bool    `yaml:"verbose"`
 	LogLevel     string   `yaml:"log_level"`
 }
 

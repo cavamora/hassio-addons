@@ -66,6 +66,10 @@ extra_flags:
 
 Trial run with no permanent changes, see what rclone would do without actually doing it.
 
+**Option:** `verbose`
+
+Enable rclone verbose logging (`--verbose`) for each job. Defaults to `true` to preserve upstream behavior. Set to `false` for large jobs or dry-runs where per-file logs are too noisy; this also allows rclone flags such as `--log-level=NOTICE` to be supplied through `extra_flags` without conflicting with `--verbose`.
+
 **Option:** `run_once`
 
 Will run all jobs with no schedule defined immediately then exit. Designed for use with the `hassio.addon_restart` service to trigger jobs.

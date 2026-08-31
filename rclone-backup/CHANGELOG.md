@@ -1,3 +1,7 @@
+## 3.4.7
+
+- Fork change: add optional `verbose` configuration. It defaults to `true` for backwards compatibility; set `verbose: false` to stop the scheduler from adding `--verbose`, reducing large dry-run/sync log volume and allowing explicit `--log-level` flags.
+
 ## 3.4.6
 
 - Fork fix: restore Home Assistant Ingress Web UI login by running rclone RC without rclone's own login-token auth. Existing `rc_auth_enabled` settings are ignored for the Web GUI because HA Ingress opens `/` without rclone's generated token, and that token is exactly what leaked in the startup log.

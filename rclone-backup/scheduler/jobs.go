@@ -62,7 +62,9 @@ func RunJob(job JobConfig, source string, destination string) {
 		args = append(args, destination)
 	}
 
-	args = append(args, "--verbose")
+	if config.Verbose == nil || *config.Verbose {
+		args = append(args, "--verbose")
+	}
 
 	for _, inclusion := range job.Include {
 		args = append(args, "--include", inclusion)
