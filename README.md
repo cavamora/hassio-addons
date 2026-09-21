@@ -29,6 +29,12 @@ Scheduled rclone runner for Home Assistant OS, forked from [`jcwillox/hassio-rcl
 
 Use it for SMB/NAS/TP-Link USB disk → encrypted Google Drive jobs. Configure `rc_auth_enabled`, `rc_user`, and `rc_pass` before starting.
 
+### HandBrake
+
+Browser-based HandBrake GUI and watch-folder video conversion, wrapped from [`jlesage/handbrake`](https://github.com/jlesage/docker-handbrake).
+
+Uses Home Assistant Ingress by default; the direct host port, raw VNC, web terminal, and web file manager remain disabled by default. The add-on exposes only `/media`, keeps source files by default, and writes watch-folder conversions under `/media/MEDIA/HandBrake/output`.
+
 ### Transmission OpenVPN
 
 Transmission BitTorrent routed through OpenVPN using the upstream [`haugene/transmission-openvpn`](https://github.com/haugene/docker-transmission-openvpn) image.
