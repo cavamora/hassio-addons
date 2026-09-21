@@ -8,7 +8,7 @@ Home Assistant add-on wrapper around [`jlesage/handbrake`](https://github.com/jl
 - No direct host port exposed by default.
 - Raw VNC disabled.
 - Web terminal disabled by default.
-- Web file manager disabled by default and restricted to `/storage`, `/watch`, and `/output` when enabled.
+- Web file manager disabled by default and restricted to the configured `storage_path`, `watch_path`, and `output_path` when enabled.
 - Upstream HandBrake state remains in the image's `/config` path; phase 1 avoids modifying Docker volume mount points at runtime.
 - The add-on only mounts Home Assistant `/media`; `/share` is intentionally not mounted in phase 1.
 - Conversion folders default to `/media/MEDIA/HandBrake`.

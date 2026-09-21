@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Rebuild the wrapper on `jlesage/handbrake` with upstream `jlesage/baseimage-gui` 4.14.0 (nginx 1.30.4 and PWA/noVNC improvements).
+- Preserve the existing HA security boundary: Ingress-only web UI, raw VNC disabled, and file manager/terminal disabled by default.
+
 ## 0.1.4
 
 - Remove the `/share` add-on mount for a narrower security boundary; phase 1 only needs `/media`.
