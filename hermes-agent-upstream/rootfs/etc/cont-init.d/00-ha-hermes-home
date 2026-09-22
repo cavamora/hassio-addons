@@ -7,7 +7,7 @@ set -eu
 TARGET=/config/.hermes
 SOURCE=/addon_configs/0a6523c6_hermes_agent/.hermes
 MIGRATION_MARKER="$TARGET/.haos-upstream-migration-v1"
-OWNERSHIP_MARKER="$TARGET/.haos-upstream-ownership-v1"
+OBLIGATION_MARKER="$TARGET/.haos-upstream-obligations-cleared-v1"
 
 printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
 printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
@@ -58,12 +58,20 @@ if [ ! -f "$MIGRATION_MARKER" ]; then
     fi
 fi
 
-# Archive extraction runs as root and retains source ownership. Correct it once
-# before upstream drops to UID 10000, otherwise config backups and writes fail.
-if [ -d "$TARGET" ] && [ ! -f "$OWNERSHIP_MARKER" ]; then
-    # The upstream image runs Hermes as UID/GID 10000. Use the numeric IDs
-    # because this early s6 hook intentionally runs before user services.
+# Archive extraction runs as root and retains source ownership. Repair imported
+# state whenever any path differs: earlier 0.3.0 imports predate this repair,
+# so a marker alone is not a safe reason to skip it.
+if [ -d "$TARGET" ] && find "$TARGET" -xdev \( ! -uid 10000 -o ! -gid 10000 \) -print -quit | grep -q .; then
     chown -R 10000:10000 "$TARGET"
-    printf '%s\n' 'owner=10000:10000' > "$OWNERSHIP_MARKER"
     echo "[ha-hermes] Normalized imported state ownership for the Hermes user." >&2
+fi
+
+# Update restart obligations describe only processes from the old wrapper.
+# Clear them once after migration; future state belongs to this container.
+if [ -f "$MIGRATION_MARKER" ] && [ ! -f "$OBLIGATION_MARKER" ]; then
+    rm -f "$TARGET/fleet_restart_pending" "$TARGET/.update_exit_code" \
+        "$TARGET/logs/update_receipts/latest.json" \
+        /config/.local/state/hermes/gateway-locks/host-update-restart.json
+    printf '%s\n' 'cleared=legacy-wrapper-update-obligations' > "$OBLIGATION_MARKER"
+    echo "[ha-hermes] Cleared stale update-restart obligations from the legacy wrapper." >&2
 fi

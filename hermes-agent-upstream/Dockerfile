@@ -24,6 +24,9 @@ RUN chmod 0755 \
         /etc/cont-init.d/00-ha-hermes-home \
         /etc/cont-init.d/90-ha-dashboard-auth
 
-# Preserve the official image ENTRYPOINT and empty CMD.  In particular, do not
-# wrap it with a second launcher: entrypoint-dispatch.sh must be PID 1 so the
-# upstream s6 lifecycle can register and supervise the multiplex gateway.
+# HA Add-ons start an image with its default command. The upstream image's empty
+# CMD launches an interactive CLI, which exits immediately without a TTY and
+# tears down s6 plus every gateway. Keep its ENTRYPOINT/lifecycle intact but use
+# its documented long-lived no-op command; upstream profile reconciliation owns
+# the actual gateway services.
+CMD ["sleep", "infinity"]

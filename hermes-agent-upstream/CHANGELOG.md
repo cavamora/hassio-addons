@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2
+
+- Set the HA add-on command to `sleep infinity`: upstream's empty Docker CMD otherwise starts its interactive CLI, which exits on HAOS's non-TTY stdin and shuts down the entire s6 gateway tree.
+- Repair state ownership on every boot only when needed, so existing 0.3.0/0.3.1 imports are fixed even if an earlier migration marker exists.
+- Clear the one-time update-restart obligation inherited from the old wrapper without deleting configuration or secrets.
+
 ## 0.3.1
 
 - Normalize copied state ownership to the upstream `hermes` user before boot, fixing the imported `backups/config` permission failure.
