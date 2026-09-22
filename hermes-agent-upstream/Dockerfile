@@ -7,12 +7,16 @@ FROM nousresearch/hermes-agent:v2026.9.14
 # HERMES_HOME is not available in their service environment.
 ENV HERMES_HOME=/config/.hermes \
     HERMES_WRITE_SAFE_ROOT=/config/.hermes
-RUN sed -i 's|export HOME=/opt/data|export HOME=/config|' \
+RUN sed -i \
+        -e 's|export HOME=/opt/data|export HOME=/config|' \
+        -e 's|HERMES_HOME="${HERMES_HOME:-/opt/data}"|HERMES_HOME="/config/.hermes"\nexport HERMES_HOME\nexport HERMES_WRITE_SAFE_ROOT="/config/.hermes"\nexport HOME="/config"|' \
         /opt/hermes/docker/main-wrapper.sh \
         /opt/hermes/docker/hermes-exec-shim.sh \
+        /opt/hermes/docker/stage2-hook.sh \
         /etc/s6-overlay/s6-rc.d/dashboard/run \
     && grep -F 'export HOME=/config' /opt/hermes/docker/main-wrapper.sh \
     && grep -F 'export HOME=/config' /opt/hermes/docker/hermes-exec-shim.sh \
+    && grep -F 'HERMES_HOME="/config/.hermes"' /opt/hermes/docker/stage2-hook.sh \
     && grep -F 'export HOME=/config' /etc/s6-overlay/s6-rc.d/dashboard/run
 
 COPY rootfs/ /

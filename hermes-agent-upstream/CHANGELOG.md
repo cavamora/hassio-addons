@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- Patch the exact upstream stage-2 bootstrap process so its migration child always receives `/config/.hermes` as `HERMES_HOME`; this avoids relying on s6 environment propagation between cont-init scripts.
+- Stop echoing the dashboard password hash in add-on logs.
+
 ## 0.2.1
 
 - Seed `HERMES_HOME`, `HERMES_WRITE_SAFE_ROOT`, and `HOME` into the s6 environment before upstream `01-hermes-setup` runs. This prevents its boot-time migration check from falling back to the wrong configuration scope.

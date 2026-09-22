@@ -49,8 +49,8 @@ PY
 )
 
 # Use upstream's atomic config writer; do not edit config.yaml directly.
-/opt/hermes/bin/hermes config set dashboard.basic_auth.username "$username"
-/opt/hermes/bin/hermes config set dashboard.basic_auth.password_hash "$password_hash"
+/opt/hermes/bin/hermes config set dashboard.basic_auth.username "$username" >/dev/null
+/opt/hermes/bin/hermes config set dashboard.basic_auth.password_hash "$password_hash" >/dev/null
 
 printf 'true' > /run/s6/container_environment/HERMES_DASHBOARD
 printf '0.0.0.0' > /run/s6/container_environment/HERMES_DASHBOARD_HOST
