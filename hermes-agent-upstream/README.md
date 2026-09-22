@@ -6,10 +6,20 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 
 - Pins the upstream release image to `v2026.9.14`; it never clones `main` at add-on boot.
 - Preserves the upstream image ENTRYPOINT, s6 supervision, profile reconciliation, and multiplex gateway lifecycle. There is no second gateway launcher or profile-start loop.
-- Uses `/config/.hermes` as `HERMES_HOME`, preserving existing configuration, profiles, skills, sessions, cron jobs, auth state, and logs.
-- Aligns `HOME=/config` with `HERMES_HOME=/config/.hermes` for upstream subprocesses that fall back to `$HOME/.hermes`; this prevents them from creating a second, empty Hermes configuration tree.
-- Keeps the upstream installation immutable. It does not reuse `/config/.hermes/hermes-agent/`, which belongs to the older third-party add-on.
+- Home Assistant gives every add-on a separate private `/config` mount. On the first boot, this add-on copies the legacy Hermes state from the old add-on’s private volume into its own `/config/.hermes` volume; it does not keep pointing at or sharing that old volume.
+- The import preserves configuration, `.env`, auth, SQLite state, profiles (including DIVA), sessions, cron jobs, skills, browser state, and logs. It excludes only the old add-on’s installed `hermes-agent` source/venv and stale PID/lock files.
+- If provisional state already exists in this add-on, it is moved to a timestamped `/config/.hermes.pre-migration-*` backup before the copy.
+- Keeps the upstream installation immutable after the import. It does not reuse the old add-on’s `/config/.hermes/hermes-agent/` runtime source.
 - Provides a Home Assistant Ingress link to the official Hermes Dashboard.
+
+## First migration boot
+
+1. Stop the old Hermes add-on. The state copy includes SQLite and credentials, so the source gateway must not be writing during the copy.
+2. Update/install this add-on and start it once.
+3. Confirm its log contains `Copied legacy Hermes state into this add-on's private volume.`
+4. Do not run the old and new add-ons together after that point: they would operate with duplicated Telegram/Discord credentials.
+
+The state import is one-time. A marker in the new private state volume prevents later startups from overwriting changes made in the new add-on.
 
 ## Ingress dashboard
 
@@ -18,17 +28,6 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 3. Use **Open Web UI** / the add-on information-page link.
 4. Sign in to the Hermes Dashboard with those credentials.
 
-Home Assistant Ingress authenticates access to Home Assistant, but the upstream dashboard also requires its own authentication when it binds outside loopback. The add-on converts the password into a bcrypt hash through Hermes' supported configuration writer; it does not print or write the raw password into `/config/.hermes`.
+Home Assistant Ingress authenticates access to Home Assistant, but the upstream dashboard also requires its own authentication when it binds outside loopback. The add-on converts the password into a hash through Hermes' supported configuration writer; it does not print or write the raw password into `/config/.hermes`.
 
 If `dashboard_password` is blank, the dashboard remains disabled and the Ingress link intentionally has no backend.
-
-## Migration test
-
-1. Make a backup of `/config/.hermes`.
-2. Stop the old Hermes add-on. Two live gateways must never share the same Hermes state directory or Discord/Telegram credentials.
-3. Install this add-on from the same repository.
-4. Configure the dashboard password if you want the Ingress UI, then start it.
-5. Inspect the logs for the multiplex gateway and platform connections.
-6. Test Telegram and DIVA in Discord before uninstalling the old add-on.
-
-The existing `.env` files remain the source of credentials. Home Assistant-specific secrets stored only in the old add-on options must be migrated separately before the old add-on is removed.

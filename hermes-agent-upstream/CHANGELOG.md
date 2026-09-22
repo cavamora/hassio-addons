@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Migrate the old Hermes add-on's private `/config/.hermes` state into this add-on's own private volume on first boot, with a backup of provisional new-add-on state.
+- Use a read-only `all_addon_configs` mount only for that one-time import; exclude the old add-on source/venv and stale runtime PID/lock files.
+
 ## 0.2.2
 
 - Patch the exact upstream stage-2 bootstrap process so its migration child always receives `/config/.hermes` as `HERMES_HOME`; this avoids relying on s6 environment propagation between cont-init scripts.

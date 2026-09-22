@@ -1,8 +1,57 @@
 #!/command/with-contenv sh
-# s6 scrubs the process environment before cont-init.  Seed the Home Assistant
-# state root before the upstream 01-hermes-setup script runs, not afterwards.
+# Seed the upstream environment, then perform a one-time, local migration from
+# the old add-on's private configuration volume.  HA add-on /config mounts are
+# per add-on; they are not the same filesystem path across two add-ons.
 set -eu
 
-printf '%s' '/config/.hermes' > /run/s6/container_environment/HERMES_HOME
-printf '%s' '/config/.hermes' > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
+TARGET=/config/.hermes
+SOURCE=/addon_configs/0a6523c6_hermes_agent/.hermes
+MARKER="$TARGET/.haos-upstream-migration-v1"
+
+printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
+printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
+
+# Do not overwrite a completed migration. The new add-on thereafter owns its
+# independent state, so its sessions and settings cannot be mutated by the old
+# wrapper if it is brought back temporarily for rollback.
+[ -f "$MARKER" ] && exit 0
+
+if [ ! -f "$SOURCE/config.yaml" ]; then
+    echo "[ha-hermes] Legacy Hermes state not found at $SOURCE; starting with this add-on's own state." >&2
+    exit 0
+fi
+
+# The old add-on must be stopped before this first start: copying a SQLite
+# database while its former gateway is writing would not be a consistent cut.
+STAGING=$(mktemp -d /config/.hermes.migration.XXXXXX)
+cleanup() { rm -rf "$STAGING"; }
+trap cleanup EXIT HUP INT TERM
+
+# Preserve user state, credentials, profiles, sessions, cron jobs, browser
+# state, skills, and logs. Exclude only the old add-on's disposable source/venv
+# and container-local runtime PID/lock markers.
+tar -C "$SOURCE" \
+    --exclude='./hermes-agent' \
+    --exclude='./gateway.pid' \
+    --exclude='./gateway.lock' \
+    --exclude='./processes.json' \
+    --exclude='./profiles/*/gateway.pid' \
+    --exclude='./profiles/*/gateway.lock' \
+    --exclude='./profiles/*/processes.json' \
+    -cf - . | tar -C "$STAGING" -xf -
+
+if [ ! -f "$STAGING/config.yaml" ]; then
+    echo "[ha-hermes] Legacy state copy did not contain config.yaml; retaining the new add-on state." >&2
+    exit 1
+fi
+
+if [ -e "$TARGET" ]; then
+    BACKUP="/config/.hermes.pre-migration-$(date -u +%Y%m%dT%H%M%SZ)"
+    mv "$TARGET" "$BACKUP"
+    echo "[ha-hermes] Backed up provisional new-add-on state to $BACKUP" >&2
+fi
+mv "$STAGING" "$TARGET"
+trap - EXIT HUP INT TERM
+printf '%s\n' 'source=0a6523c6_hermes_agent' 'mode=one-time-copy' > "$MARKER"
+echo "[ha-hermes] Copied legacy Hermes state into this add-on's private volume." >&2
