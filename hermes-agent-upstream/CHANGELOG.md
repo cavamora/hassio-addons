@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Normalize copied state ownership to the upstream `hermes` user before boot, fixing the imported `backups/config` permission failure.
+- Omit stale update/restart obligation markers from the legacy state import so the new container does not warn about an old wrapper's already-ended gateway process.
+
 ## 0.3.0
 
 - Migrate the old Hermes add-on's private `/config/.hermes` state into this add-on's own private volume on first boot, with a backup of provisional new-add-on state.

@@ -41,7 +41,7 @@ Transmission BitTorrent routed through OpenVPN using the upstream [`haugene/tran
 
 ### Hermes Agent Upstream
 
-A minimal HAOS wrapper around the official [`nousresearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) image. On its first boot it copies the legacy Hermes add-on state into its own private `/config/.hermes` volume, then delegates gateway/profile supervision to upstream without a third-party terminal, nginx, source-clone, or gateway-launcher layer.
+A minimal HAOS wrapper around the official [`nousresearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) image. On its first boot it copies the legacy Hermes add-on state into its own private `/config/.hermes` volume and normalizes it for the upstream `hermes` user, then delegates gateway/profile supervision to upstream without a third-party terminal, nginx, source-clone, or gateway-launcher layer.
 
 This repository follows the local HAOS wrapper conventions:
 
