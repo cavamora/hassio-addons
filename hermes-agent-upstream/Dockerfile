@@ -16,7 +16,9 @@ RUN sed -i 's|export HOME=/opt/data|export HOME=/config|' \
     && grep -F 'export HOME=/config' /etc/s6-overlay/s6-rc.d/dashboard/run
 
 COPY rootfs/ /
-RUN chmod 0755 /etc/cont-init.d/90-ha-dashboard-auth
+RUN chmod 0755 \
+        /etc/cont-init.d/00-ha-hermes-home \
+        /etc/cont-init.d/90-ha-dashboard-auth
 
 # Preserve the official image ENTRYPOINT and empty CMD.  In particular, do not
 # wrap it with a second launcher: entrypoint-dispatch.sh must be PID 1 so the

@@ -1,0 +1,8 @@
+#!/command/with-contenv sh
+# s6 scrubs the process environment before cont-init.  Seed the Home Assistant
+# state root before the upstream 01-hermes-setup script runs, not afterwards.
+set -eu
+
+printf '%s' '/config/.hermes' > /run/s6/container_environment/HERMES_HOME
+printf '%s' '/config/.hermes' > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
+printf '%s' '/config' > /run/s6/container_environment/HOME

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Seed `HERMES_HOME`, `HERMES_WRITE_SAFE_ROOT`, and `HOME` into the s6 environment before upstream `01-hermes-setup` runs. This prevents its boot-time migration check from falling back to the wrong configuration scope.
+
 ## 0.2.0
 
 - Restore the official image ENTRYPOINT rather than wrapping it with a second launcher; upstream s6 now owns the default and multiplex profile gateway lifecycle end-to-end.

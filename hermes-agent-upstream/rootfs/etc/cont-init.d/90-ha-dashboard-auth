@@ -4,16 +4,11 @@
 # bypass Hermes' own authentication boundary.
 set -eu
 
-HERMES_HOME=/config/.hermes
-export HERMES_HOME
+# The 00-ha-hermes-home cont-init script has already made these values visible
+# to upstream setup and all later s6 services.
+export HERMES_HOME=/config/.hermes
 export HERMES_WRITE_SAFE_ROOT=/config/.hermes
 export HOME=/config
-
-# Make these values visible to every later upstream s6 service.  This avoids
-# relying on a custom container entrypoint or gateway launcher.
-printf '%s' "$HERMES_HOME" > /run/s6/container_environment/HERMES_HOME
-printf '%s' "$HERMES_WRITE_SAFE_ROOT" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
-printf '%s' "$HOME" > /run/s6/container_environment/HOME
 
 OPTIONS_FILE=/data/options.json
 [ -f "$OPTIONS_FILE" ] || exit 0
