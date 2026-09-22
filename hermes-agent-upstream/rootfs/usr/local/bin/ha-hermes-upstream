@@ -1,9 +1,0 @@
-#!/bin/sh
-# Run the unmodified upstream lifecycle against the existing HA add-on config.
-set -eu
-
-export HERMES_HOME=/config/.hermes
-export HERMES_WRITE_SAFE_ROOT=/config/.hermes
-
-mkdir -p "$HERMES_HOME"
-exec /opt/hermes/docker/entrypoint-dispatch.sh gateway run

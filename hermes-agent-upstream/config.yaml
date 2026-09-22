@@ -1,5 +1,5 @@
 name: Hermes Agent Upstream
-version: 0.1.1
+version: 0.2.0
 slug: hermes_agent_upstream
 description: Minimal HAOS wrapper around the official NousResearch Hermes Agent image
 url: https://github.com/cavamora/hassio-addons/tree/main/hermes-agent-upstream
@@ -15,9 +15,12 @@ map:
   - addon_config:rw
   - media:rw
   - share:rw
+ingress: true
+ingress_port: 9119
+ingress_stream: true
 options:
-  profiles_to_start:
-    - diva
+  dashboard_username: hermes
+  dashboard_password: ""
 schema:
-  profiles_to_start:
-    - str
+  dashboard_username: str
+  dashboard_password: password

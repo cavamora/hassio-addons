@@ -1,0 +1,63 @@
+#!/command/with-contenv sh
+# Configure the optional, HA Ingress-only upstream dashboard.  The official
+# dashboard refuses unauthenticated non-loopback binds, so HA Ingress does not
+# bypass Hermes' own authentication boundary.
+set -eu
+
+HERMES_HOME=/config/.hermes
+export HERMES_HOME
+export HERMES_WRITE_SAFE_ROOT=/config/.hermes
+export HOME=/config
+
+# Make these values visible to every later upstream s6 service.  This avoids
+# relying on a custom container entrypoint or gateway launcher.
+printf '%s' "$HERMES_HOME" > /run/s6/container_environment/HERMES_HOME
+printf '%s' "$HERMES_WRITE_SAFE_ROOT" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
+printf '%s' "$HOME" > /run/s6/container_environment/HOME
+
+OPTIONS_FILE=/data/options.json
+[ -f "$OPTIONS_FILE" ] || exit 0
+
+read_option() {
+    python3 - "$OPTIONS_FILE" "$1" <<'PY'
+import json
+import sys
+try:
+    values = json.load(open(sys.argv[1], encoding="utf-8"))
+except (OSError, ValueError):
+    values = {}
+value = values.get(sys.argv[2], "")
+print(value if isinstance(value, str) else "")
+PY
+}
+
+username=$(read_option dashboard_username)
+password=$(read_option dashboard_password)
+
+if [ -z "$password" ]; then
+    echo "[ha-hermes] Dashboard disabled: set dashboard_password in the add-on configuration to enable the Ingress UI." >&2
+    exit 0
+fi
+
+if [ -z "$username" ]; then
+    echo "[ha-hermes] dashboard_username cannot be empty; dashboard disabled." >&2
+    exit 0
+fi
+
+# The Hermes config stores only a bcrypt hash.  The raw password remains in
+# Home Assistant's password-valued add-on option and is never printed.
+password_hash=$(/opt/hermes/.venv/bin/python - "$password" <<'PY'
+import sys
+from plugins.dashboard_auth.basic import hash_password
+print(hash_password(sys.argv[1]))
+PY
+)
+
+# Use upstream's atomic config writer; do not edit config.yaml directly.
+/opt/hermes/bin/hermes config set dashboard.basic_auth.username "$username"
+/opt/hermes/bin/hermes config set dashboard.basic_auth.password_hash "$password_hash"
+
+printf 'true' > /run/s6/container_environment/HERMES_DASHBOARD
+printf '0.0.0.0' > /run/s6/container_environment/HERMES_DASHBOARD_HOST
+printf '9119' > /run/s6/container_environment/HERMES_DASHBOARD_PORT
+echo "[ha-hermes] Dashboard enabled through Home Assistant Ingress." >&2
