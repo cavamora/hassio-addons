@@ -39,6 +39,10 @@ Uses Home Assistant Ingress by default; the direct host port, raw VNC, web termi
 
 Transmission BitTorrent routed through OpenVPN using the upstream [`haugene/transmission-openvpn`](https://github.com/haugene/docker-transmission-openvpn) image.
 
+### Hermes Agent Upstream
+
+A minimal HAOS wrapper around the official [`nousresearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) image. It preserves Hermes state in `/config/.hermes` and delegates gateway/profile supervision to upstream, without a third-party terminal, nginx, source-clone, or gateway-launcher layer.
+
 This repository follows the local HAOS wrapper conventions:
 
 - persistent app state under `/data` where relevant;
