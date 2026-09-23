@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- Expose the authenticated Hermes Dashboard directly on TCP port 9119, including Home Assistant's **Open Web UI** link, while retaining Ingress support.
+
 ## 0.3.2
 
 - Set the HA add-on command to `sleep infinity`: upstream's empty Docker CMD otherwise starts its interactive CLI, which exits on HAOS's non-TTY stdin and shuts down the entire s6 gateway tree.

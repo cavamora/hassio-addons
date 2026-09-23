@@ -25,7 +25,7 @@ The state import is one-time. A marker in the new private state volume prevents 
 
 1. In the add-on **Configuration** tab, set `dashboard_password` and optionally change `dashboard_username`.
 2. Save and restart the add-on.
-3. Use **Open Web UI** / the add-on information-page link.
+3. Use the Home Assistant sidebar entry / Ingress link. The add-on also exposes the authenticated dashboard directly through **Open Web UI** at `http://<Home-Assistant-host>:9119`.
 4. Sign in to the Hermes Dashboard with those credentials.
 
 Home Assistant Ingress authenticates access to Home Assistant, but the upstream dashboard also requires its own authentication when it binds outside loopback. The add-on converts the password into a hash through Hermes' supported configuration writer; it does not print or write the raw password into `/config/.hermes`.
