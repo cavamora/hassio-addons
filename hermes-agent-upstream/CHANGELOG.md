@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.10
+
+- Update the pinned official Hermes Docker image from `v2026.9.14` to stable upstream release `v2026.9.21` (Hermes Agent `0.21.4`).
+- Retain the thin HAOS wrapper, persistent-state wiring, Dashboard Ingress compatibility patch, scoped shared-folder access, and opt-in authenticated shell.
+
 ## 0.3.9
 
 - Make the upstream Dashboard recognize Home Assistant Ingress's `X-Ingress-Path` header for SPA assets, WebSocket/API base paths, and auth redirects. This fixes the blank/404 panel caused by absolute asset URLs resolving at Home Assistant's root.

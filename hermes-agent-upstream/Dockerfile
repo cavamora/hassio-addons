@@ -1,6 +1,6 @@
 # Thin HAOS wrapper around the official Hermes image. Upstream retains ownership
 # of s6, gateway supervision, profile reconciliation, and all Hermes services.
-FROM nousresearch/hermes-agent:v2026.9.14
+FROM nousresearch/hermes-agent:v2026.9.21
 
 # HA add-on data is persisted at /config/.hermes.  Keep HOME aligned with that
 # root for the few upstream subprocesses which fall back to $HOME/.hermes when
