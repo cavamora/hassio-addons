@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.5
+
+- On boot, grant the unprivileged Hermes service group write access to the HAOS `/media` and `/share` mount roots without recursively changing user media or existing shared files.
+
 ## 0.3.4
 
 - Make the existing HAOS `media:rw` and `share:rw` mounts usable by Hermes file-writing tools, which now allow `/media` and `/share` in addition to private `/config/.hermes` state.

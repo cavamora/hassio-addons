@@ -40,3 +40,5 @@ The add-on mounts the normal HAOS shared folders read/write:
 - `/share` — Home Assistant shared storage.
 
 Hermes file tools may read and write both paths. Other add-ons' private configuration volumes remain read-only and are not exposed as a writable share.
+
+The add-on makes the two mount roots group-writable for the unprivileged Hermes service and applies the setgid bit so new folders inherit that group. It intentionally does not recursively change ownership or modes under existing media/shared folders.

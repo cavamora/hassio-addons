@@ -16,6 +16,21 @@ printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
 printf '%s' "$TARGET:/media:/share" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
 
+# HAOS mounts these shared roots as root:root 0755. The gateway itself runs as
+# the unprivileged `hermes` user, so make only the two mount roots group-writable
+# (not recursive) and inherit the group for new folders. Existing files and
+# folders retain their owner/mode; this avoids a destructive permission sweep
+# over user media.
+for shared_root in /media /share; do
+    if [ -d "$shared_root" ]; then
+        if chgrp hermes "$shared_root" && chmod 2775 "$shared_root"; then
+            echo "[ha-hermes] Enabled Hermes write access at $shared_root" >&2
+        else
+            echo "[ha-hermes] WARNING: Could not enable Hermes write access at $shared_root" >&2
+        fi
+    fi
+done
+
 if [ ! -f "$MIGRATION_MARKER" ]; then
     if [ ! -f "$SOURCE/config.yaml" ]; then
         echo "[ha-hermes] Legacy Hermes state not found at $SOURCE; starting with this add-on's own state." >&2
