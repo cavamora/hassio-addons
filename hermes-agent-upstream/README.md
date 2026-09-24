@@ -36,6 +36,12 @@ If `dashboard_password` is blank, the dashboard remains disabled and the Ingress
 
 `dashboard_terminal` controls the Dashboard **Chat** tab. When enabled, it embeds the official Hermes TUI through a browser PTY; it is not a root shell and runs as the unprivileged `hermes` service user. The Dashboard's existing authentication remains required. Disable the toggle to remove that terminal surface.
 
+### Browser shell
+
+For a real shell, enable `shell_terminal_enabled` and set a non-empty `shell_terminal_username` and `shell_terminal_password` in the add-on **Configuration** page. The add-on then exposes `http://<HA-host>:7681`; log in there and run commands such as `hermes doctor`, `hermes update`, or `hermes gateway status`.
+
+This service is **disabled by default**, runs as the unprivileged `hermes` user, and keeps the configured shell credential only in the add-on configuration plus a temporary runtime file. It is direct LAN HTTP access, so do not expose port 7681 to the internet; use VPN/Tailscale for remote access.
+
 ## Home Assistant shared folders
 
 The add-on mounts the normal HAOS shared folders read/write:

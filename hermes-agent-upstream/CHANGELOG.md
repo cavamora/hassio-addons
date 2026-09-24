@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.7
+
+- Add an optional, authenticated browser shell on TCP `7681` for administrative Hermes commands such as `hermes doctor` and `hermes update`. It is disabled by default and requires an explicit username and password in add-on Configuration.
+
 ## 0.3.6
 
 - Add a `dashboard_terminal` Configuration toggle for the authenticated interactive Hermes TUI in the Dashboard Chat tab. It defaults to enabled to preserve current behavior.

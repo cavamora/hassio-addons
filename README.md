@@ -43,7 +43,7 @@ Transmission BitTorrent routed through OpenVPN using the upstream [`haugene/tran
 
 A minimal HAOS wrapper around the official [`nousresearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) image. On its first boot it copies the legacy Hermes add-on state into its own private `/config/.hermes` volume, repairs imported ownership when needed, and delegates gateway/profile supervision to upstream without a third-party terminal, nginx, source-clone, or gateway-launcher layer. Its HAOS command is a long-lived upstream-compatible sentinel rather than the image's interactive no-argument CLI, with the authenticated Dashboard available through Ingress and direct TCP port `9119`.
 
-Hermes can work with HAOS `/media` and `/share` as explicit read/write mounts. The wrapper grants its unprivileged service user access at those two mount roots without recursively changing existing files; other add-ons' private volumes stay read-only. Its authenticated Dashboard has a configurable embedded Hermes TUI terminal.
+Hermes can work with HAOS `/media` and `/share` as explicit read/write mounts. The wrapper grants its unprivileged service user access at those two mount roots without recursively changing existing files; other add-ons' private volumes stay read-only. Its authenticated Dashboard has a configurable embedded Hermes TUI terminal, with a separately opt-in authenticated shell on port `7681` for operator commands.
 
 This repository follows the local HAOS wrapper conventions:
 

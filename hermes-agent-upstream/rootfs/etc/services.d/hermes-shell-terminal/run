@@ -1,0 +1,23 @@
+#!/command/with-contenv sh
+# Optional authenticated browser shell for HAOS operators. The service is kept
+# disabled unless the add-on configuration supplies both the explicit enable
+# flag and a password. Credentials live on tmpfs only and are never logged.
+set -eu
+
+state=/run/s6/container_environment/HERMES_SHELL_TERMINAL_ENABLED
+creds=/run/hermes-shell-terminal-credentials
+
+if [ ! -f "$state" ] || [ "$(cat "$state")" != 1 ] || [ ! -r "$creds" ]; then
+    exec sleep infinity
+fi
+
+username=$(sed -n '1p' "$creds")
+password=$(sed -n '2p' "$creds")
+[ -n "$username" ] && [ -n "$password" ] || exec sleep infinity
+
+exec s6-setuidgid hermes /usr/local/bin/ttyd \
+    -W \
+    -i 0.0.0.0 \
+    -p 7681 \
+    -c "$username:$password" \
+    env PATH="/opt/hermes/bin:$PATH" /bin/bash -l

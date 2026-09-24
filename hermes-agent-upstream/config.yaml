@@ -1,5 +1,5 @@
 name: Hermes Agent Upstream
-version: 0.3.6
+version: 0.3.7
 slug: hermes_agent_upstream
 description: Minimal HAOS wrapper around the official NousResearch Hermes Agent image
 url: https://github.com/cavamora/hassio-addons/tree/main/hermes-agent-upstream
@@ -22,13 +22,21 @@ ingress_stream: true
 webui: http://[HOST]:[PORT:9119]
 ports:
   9119/tcp: 9119
+  7681/tcp: 7681
 ports_description:
   9119/tcp: Hermes Dashboard (direct LAN access)
+  7681/tcp: Optional authenticated Hermes shell terminal
 options:
   dashboard_username: hermes
   dashboard_password: ""
   dashboard_terminal: true
+  shell_terminal_enabled: false
+  shell_terminal_username: hermes
+  shell_terminal_password: ""
 schema:
   dashboard_username: str
   dashboard_password: password
   dashboard_terminal: bool
+  shell_terminal_enabled: bool
+  shell_terminal_username: str
+  shell_terminal_password: password

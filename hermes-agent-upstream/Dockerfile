@@ -21,10 +21,25 @@ RUN sed -i \
     && sed -i 's|_DASHBOARD_EMBEDDED_CHAT_ENABLED = True|_DASHBOARD_EMBEDDED_CHAT_ENABLED = os.getenv("HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}|' /opt/hermes/hermes_cli/web_server.py \
     && grep -F 'HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED' /opt/hermes/hermes_cli/web_server.py
 
+# Optional browser shell, pinned to an upstream ttyd release and verified per
+# architecture. It runs only when the add-on's shell_terminal_enabled option is
+# explicitly enabled with a non-empty password.
+RUN arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+      amd64) asset=x86_64; sha256=8a217c968aba172e0dbf3f34447218dc015bc4d5e59bf51db2f2cd12b7be4f55 ;; \
+      arm64) asset=aarch64; sha256=b38acadd89d1d396a0f5649aa52c539edbad07f4bc7348b27b4f4b7219dd4165 ;; \
+      *) echo "Unsupported ttyd architecture: $arch" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL --retry 3 -o /usr/local/bin/ttyd "https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.$asset"; \
+    echo "$sha256  /usr/local/bin/ttyd" | sha256sum -c -; \
+    chmod 0755 /usr/local/bin/ttyd; \
+    /usr/local/bin/ttyd --version
+
 COPY rootfs/ /
 RUN chmod 0755 \
         /etc/cont-init.d/00-ha-hermes-home \
-        /etc/cont-init.d/90-ha-dashboard-auth
+        /etc/cont-init.d/90-ha-dashboard-auth \
+        /etc/services.d/hermes-shell-terminal/run
 
 # HA Add-ons start an image with its default command. The upstream image's empty
 # CMD launches an interactive CLI, which exits immediately without a TTY and

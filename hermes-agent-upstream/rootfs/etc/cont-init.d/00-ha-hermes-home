@@ -35,6 +35,36 @@ else
     echo "[ha-hermes] Dashboard interactive terminal disabled by add-on configuration." >&2
 fi
 
+# The browser shell is deliberately separate from the Dashboard TUI. It is
+# disabled unless the user supplies an explicit password; its credentials are
+# written only to /run (tmpfs), never into Hermes state or logs.
+python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+state = Path('/run/s6/container_environment/HERMES_SHELL_TERMINAL_ENABLED')
+creds = Path('/run/hermes-shell-terminal-credentials')
+try:
+    options = json.loads(Path('/data/options.json').read_text(encoding='utf-8'))
+except (OSError, ValueError):
+    options = {}
+
+enabled = options.get('shell_terminal_enabled') is True
+username = str(options.get('shell_terminal_username') or '').strip()
+password = str(options.get('shell_terminal_password') or '')
+if enabled and username and password and '\n' not in username and '\n' not in password:
+    creds.write_text(f'{username}\n{password}\n', encoding='utf-8')
+    os.chmod(creds, 0o600)
+    state.write_text('1', encoding='ascii')
+    print('[ha-hermes] Authenticated browser shell enabled on TCP 7681.', flush=True)
+else:
+    creds.unlink(missing_ok=True)
+    state.write_text('0', encoding='ascii')
+    if enabled:
+        print('[ha-hermes] Browser shell remains disabled: set shell_terminal_username and shell_terminal_password.', flush=True)
+PY
+
 # HAOS mounts these shared roots as root:root 0755. The gateway itself runs as
 # the unprivileged `hermes` user, so make only the two mount roots group-writable
 # (not recursive) and inherit the group for new folders. Existing files and
