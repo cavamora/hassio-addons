@@ -4,22 +4,11 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 
 ## Design
 
-- Pins the upstream release image to `v2026.9.14`; it never clones `main` at add-on boot.
+- Pins the upstream release image to `v2026.9.21`; it never clones `main` at add-on boot.
 - Preserves the upstream image ENTRYPOINT, s6 supervision, profile reconciliation, and multiplex gateway lifecycle. There is no second gateway launcher or profile-start loop.
-- Home Assistant gives every add-on a separate private `/config` mount. On the first boot, this add-on copies the legacy Hermes state from the old add-on’s private volume into its own `/config/.hermes` volume; it does not keep pointing at or sharing that old volume.
-- The import preserves configuration, `.env`, auth, SQLite state, profiles (including DIVA), sessions, cron jobs, skills, browser state, and logs. It excludes only the old add-on’s installed `hermes-agent` source/venv and stale PID/lock files.
-- If provisional state already exists in this add-on, it is moved to a timestamped `/config/.hermes.pre-migration-*` backup before the copy.
-- Keeps the upstream installation immutable after the import. It does not reuse the old add-on’s `/config/.hermes/hermes-agent/` runtime source.
+- Uses only this add-on's private `/config/.hermes` persistent state. It does not mount, read, or copy another add-on's private configuration volume.
+- Keeps the upstream installation immutable and separate from persistent state.
 - Provides a Home Assistant Ingress link to the official Hermes Dashboard.
-
-## First migration boot
-
-1. Stop the old Hermes add-on. The state copy includes SQLite and credentials, so the source gateway must not be writing during the copy.
-2. Update/install this add-on and start it once.
-3. Confirm its log contains `Copied legacy Hermes state into this add-on's private volume.`
-4. Do not run the old and new add-ons together after that point: they would operate with duplicated Telegram/Discord credentials.
-
-The state import is one-time. A marker in the new private state volume prevents later startups from overwriting changes made in the new add-on.
 
 ## Ingress dashboard
 

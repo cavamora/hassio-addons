@@ -1,18 +1,13 @@
 #!/command/with-contenv sh
-# Seed the upstream environment, then perform a one-time, local migration from
-# the old add-on's private configuration volume. HA add-on /config mounts are
-# per add-on; they are not the same filesystem path across two add-ons.
+# Seed the upstream environment for this add-on's own persistent state.
 set -eu
 
 TARGET=/config/.hermes
-SOURCE=/addon_configs/0a6523c6_hermes_agent/.hermes
-MIGRATION_MARKER="$TARGET/.haos-upstream-migration-v1"
-OBLIGATION_MARKER="$TARGET/.haos-upstream-obligations-cleared-v1"
 
 printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
 # `media` and `share` are explicit read/write HAOS mounts in config.yaml.
 # Permit Hermes file tools to write there as well as its private state; do not
-# include the read-only all_addon_configs mount.
+# include other add-ons' private configuration volumes.
 printf '%s' "$TARGET:/media:/share" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
 
@@ -80,65 +75,8 @@ for shared_root in /media /share; do
     fi
 done
 
-if [ ! -f "$MIGRATION_MARKER" ]; then
-    if [ ! -f "$SOURCE/config.yaml" ]; then
-        echo "[ha-hermes] Legacy Hermes state not found at $SOURCE; starting with this add-on's own state." >&2
-    else
-        # The old add-on must be stopped before this first start: copying a
-        # SQLite database while its former gateway is writing is not consistent.
-        STAGING=$(mktemp -d /config/.hermes.migration.XXXXXX)
-        cleanup() { rm -rf "$STAGING"; }
-        trap cleanup EXIT HUP INT TERM
-
-        # Preserve user configuration, credentials, profiles, sessions, cron
-        # jobs, browser state, skills, and logs. Exclude the old runtime source,
-        # transient PID/lock files, and update obligations that only referred to
-        # the old add-on's former process tree.
-        tar -C "$SOURCE" \
-            --exclude='./hermes-agent' \
-            --exclude='./gateway.pid' \
-            --exclude='./gateway.lock' \
-            --exclude='./processes.json' \
-            --exclude='./fleet_restart_pending' \
-            --exclude='./.update_exit_code' \
-            --exclude='./logs/update_receipts' \
-            --exclude='./serve_restart_pending' \
-            --exclude='./profiles/*/gateway.pid' \
-            --exclude='./profiles/*/gateway.lock' \
-            --exclude='./profiles/*/processes.json' \
-            -cf - . | tar -C "$STAGING" -xf -
-
-        if [ ! -f "$STAGING/config.yaml" ]; then
-            echo "[ha-hermes] Legacy state copy did not contain config.yaml; retaining the new add-on state." >&2
-            exit 1
-        fi
-
-        if [ -e "$TARGET" ]; then
-            BACKUP="/config/.hermes.pre-migration-$(date -u +%Y%m%dT%H%M%SZ)"
-            mv "$TARGET" "$BACKUP"
-            echo "[ha-hermes] Backed up provisional new-add-on state to $BACKUP" >&2
-        fi
-        mv "$STAGING" "$TARGET"
-        trap - EXIT HUP INT TERM
-        printf '%s\n' 'source=0a6523c6_hermes_agent' 'mode=one-time-copy' > "$MIGRATION_MARKER"
-        echo "[ha-hermes] Copied legacy Hermes state into this add-on's private volume." >&2
-    fi
-fi
-
-# Archive extraction runs as root and retains source ownership. Repair imported
-# state whenever any path differs: earlier 0.3.0 imports predate this repair,
-# so a marker alone is not a safe reason to skip it.
+# Ensure the persisted state is accessible to the unprivileged upstream service.
 if [ -d "$TARGET" ] && find "$TARGET" -xdev \( ! -uid 10000 -o ! -gid 10000 \) -print -quit | grep -q .; then
     chown -R 10000:10000 "$TARGET"
-    echo "[ha-hermes] Normalized imported state ownership for the Hermes user." >&2
-fi
-
-# Update restart obligations describe only processes from the old wrapper.
-# Clear them once after migration; future state belongs to this container.
-if [ -f "$MIGRATION_MARKER" ] && [ ! -f "$OBLIGATION_MARKER" ]; then
-    rm -f "$TARGET/fleet_restart_pending" "$TARGET/.update_exit_code" \
-        "$TARGET/logs/update_receipts/latest.json" \
-        /config/.local/state/hermes/gateway-locks/host-update-restart.json
-    printf '%s\n' 'cleared=legacy-wrapper-update-obligations' > "$OBLIGATION_MARKER"
-    echo "[ha-hermes] Cleared stale update-restart obligations from the legacy wrapper." >&2
+    echo "[ha-hermes] Normalized Hermes state ownership." >&2
 fi

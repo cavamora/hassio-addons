@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.11
+
+- Remove the completed one-time import from the former Hermes add-on and the now-unneeded `all_addon_configs:ro` mount.
+- The wrapper now manages only this add-on's own persistent `/config/.hermes` state; the scoped `/media` and `/share` mounts remain unchanged.
+
 ## 0.3.10
 
 - Update the pinned official Hermes Docker image from `v2026.9.14` to stable upstream release `v2026.9.21` (Hermes Agent `0.21.4`).
