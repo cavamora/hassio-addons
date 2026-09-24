@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.6
+
+- Add a `dashboard_terminal` Configuration toggle for the authenticated interactive Hermes TUI in the Dashboard Chat tab. It defaults to enabled to preserve current behavior.
+
 ## 0.3.5
 
 - On boot, grant the unprivileged Hermes service group write access to the HAOS `/media` and `/share` mount roots without recursively changing user media or existing shared files.

@@ -32,6 +32,10 @@ Home Assistant Ingress authenticates access to Home Assistant, but the upstream 
 
 If `dashboard_password` is blank, the dashboard remains disabled and the Ingress link intentionally has no backend.
 
+### Interactive terminal
+
+`dashboard_terminal` controls the Dashboard **Chat** tab. When enabled, it embeds the official Hermes TUI through a browser PTY; it is not a root shell and runs as the unprivileged `hermes` service user. The Dashboard's existing authentication remains required. Disable the toggle to remove that terminal surface.
+
 ## Home Assistant shared folders
 
 The add-on mounts the normal HAOS shared folders read/write:

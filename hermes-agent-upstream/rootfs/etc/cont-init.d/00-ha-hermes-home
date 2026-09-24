@@ -16,6 +16,25 @@ printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
 printf '%s' "$TARGET:/media:/share" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
 
+# The Dashboard Chat tab is an embedded Hermes TUI backed by a PTY. Keep it
+# configurable at the HA add-on boundary and disabled only when requested.
+terminal_enabled="$(python3 - <<'PY'
+import json
+from pathlib import Path
+try:
+    options = json.loads(Path('/data/options.json').read_text(encoding='utf-8'))
+except (OSError, ValueError):
+    options = {}
+print('1' if options.get('dashboard_terminal', True) is True else '0')
+PY
+)"
+printf '%s' "$terminal_enabled" > /run/s6/container_environment/HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED
+if [ "$terminal_enabled" = 1 ]; then
+    echo "[ha-hermes] Dashboard interactive terminal enabled." >&2
+else
+    echo "[ha-hermes] Dashboard interactive terminal disabled by add-on configuration." >&2
+fi
+
 # HAOS mounts these shared roots as root:root 0755. The gateway itself runs as
 # the unprivileged `hermes` user, so make only the two mount roots group-writable
 # (not recursive) and inherit the group for new folders. Existing files and
