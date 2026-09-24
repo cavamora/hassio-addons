@@ -10,7 +10,10 @@ MIGRATION_MARKER="$TARGET/.haos-upstream-migration-v1"
 OBLIGATION_MARKER="$TARGET/.haos-upstream-obligations-cleared-v1"
 
 printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
-printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
+# `media` and `share` are explicit read/write HAOS mounts in config.yaml.
+# Permit Hermes file tools to write there as well as its private state; do not
+# include the read-only all_addon_configs mount.
+printf '%s' "$TARGET:/media:/share" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
 
 if [ ! -f "$MIGRATION_MARKER" ]; then

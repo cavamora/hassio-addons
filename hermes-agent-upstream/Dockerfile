@@ -6,10 +6,10 @@ FROM nousresearch/hermes-agent:v2026.9.14
 # root for the few upstream subprocesses which fall back to $HOME/.hermes when
 # HERMES_HOME is not available in their service environment.
 ENV HERMES_HOME=/config/.hermes \
-    HERMES_WRITE_SAFE_ROOT=/config/.hermes
+    HERMES_WRITE_SAFE_ROOT=/config/.hermes:/media:/share
 RUN sed -i \
         -e 's|export HOME=/opt/data|export HOME=/config|' \
-        -e 's|HERMES_HOME="${HERMES_HOME:-/opt/data}"|HERMES_HOME="/config/.hermes"\nexport HERMES_HOME\nexport HERMES_WRITE_SAFE_ROOT="/config/.hermes"\nexport HOME="/config"|' \
+        -e 's|HERMES_HOME="${HERMES_HOME:-/opt/data}"|HERMES_HOME="/config/.hermes"\nexport HERMES_HOME\nexport HERMES_WRITE_SAFE_ROOT="/config/.hermes:/media:/share"\nexport HOME="/config"|' \
         /opt/hermes/docker/main-wrapper.sh \
         /opt/hermes/docker/hermes-exec-shim.sh \
         /opt/hermes/docker/stage2-hook.sh \

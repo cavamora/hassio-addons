@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.4
+
+- Make the existing HAOS `media:rw` and `share:rw` mounts usable by Hermes file-writing tools, which now allow `/media` and `/share` in addition to private `/config/.hermes` state.
+- Keep `all_addon_configs` strictly read-only; other add-ons' private state is not a general writable share.
+
 ## 0.3.3
 
 - Expose the authenticated Hermes Dashboard directly on TCP port 9119, including Home Assistant's **Open Web UI** link, while retaining Ingress support.

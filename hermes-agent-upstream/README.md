@@ -31,3 +31,12 @@ The state import is one-time. A marker in the new private state volume prevents 
 Home Assistant Ingress authenticates access to Home Assistant, but the upstream dashboard also requires its own authentication when it binds outside loopback. The add-on converts the password into a hash through Hermes' supported configuration writer; it does not print or write the raw password into `/config/.hermes`.
 
 If `dashboard_password` is blank, the dashboard remains disabled and the Ingress link intentionally has no backend.
+
+## Home Assistant shared folders
+
+The add-on mounts the normal HAOS shared folders read/write:
+
+- `/media` — Home Assistant media storage, for example `/media/MEDIA/...`.
+- `/share` — Home Assistant shared storage.
+
+Hermes file tools may read and write both paths. Other add-ons' private configuration volumes remain read-only and are not exposed as a writable share.
