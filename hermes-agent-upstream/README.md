@@ -11,6 +11,16 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 - If provisional state already exists in this add-on, it is moved to a timestamped `/config/.hermes.pre-migration-*` backup before the copy.
 - Keeps the upstream installation immutable after the import. It does not reuse the old add-on’s `/config/.hermes/hermes-agent/` runtime source.
 - Provides a Home Assistant Ingress link to the official Hermes Dashboard.
+- Mounts Home Assistant's shared `/media` and `/share` folders read/write, so Hermes can work with the same media library and shared files available on the HA host.
+
+## Home Assistant shared folders
+
+The add-on has read/write access to these standard HAOS paths:
+
+- `/media` — the Home Assistant media folder (for example `/media/MEDIA/...`).
+- `/share` — the Home Assistant shared-folder area.
+
+They are Home Assistant add-on mappings, not copies. Files created, edited, or deleted by Hermes there affect the host folders directly. The add-on does not mount the host `/config` directory; its `/config` remains the add-on's private persistent state volume.
 
 ## First migration boot
 

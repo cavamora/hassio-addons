@@ -1,5 +1,5 @@
 name: Hermes Agent Upstream
-version: 0.3.3
+version: 0.3.4
 slug: hermes_agent_upstream
 description: Minimal HAOS wrapper around the official NousResearch Hermes Agent image
 url: https://github.com/cavamora/hassio-addons/tree/main/hermes-agent-upstream
@@ -14,6 +14,7 @@ panel_title: Hermes Agent
 map:
   - addon_config:rw
   - all_addon_configs:ro
+  # Make Home Assistant's shared file areas available to Hermes tools.
   - media:rw
   - share:rw
 ingress: true

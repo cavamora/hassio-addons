@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+- Explicitly release read/write Home Assistant folder mappings for `/media` and `/share`, allowing Hermes tools to work with the host's shared media and file areas.
+
 ## 0.3.3
 
 - Expose the authenticated Hermes Dashboard directly on TCP port 9119, including Home Assistant's **Open Web UI** link, while retaining Ingress support.
