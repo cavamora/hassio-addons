@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Browser-shell entrypoint. Login shells in the base image reset PATH and drop
+# /opt/hermes/bin, so establish the Hermes launcher path after all startup
+# files would otherwise run. Keep this as an unprivileged interactive shell.
+set -e
+export PATH="/opt/hermes/bin:/opt/hermes/.venv/bin:${PATH}"
+cd /config
+exec /bin/bash --noprofile --norc -i

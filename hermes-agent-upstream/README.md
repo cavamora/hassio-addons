@@ -38,7 +38,7 @@ If `dashboard_password` is blank, the dashboard remains disabled and the Ingress
 
 ### Browser shell
 
-For a real shell, enable `shell_terminal_enabled` and set a non-empty `shell_terminal_username` and `shell_terminal_password` in the add-on **Configuration** page. The add-on then exposes `http://<HA-host>:7681`; log in there and run commands such as `hermes doctor`, `hermes update`, or `hermes gateway status`.
+For a real shell, enable `shell_terminal_enabled` and set a non-empty `shell_terminal_username` and `shell_terminal_password` in the add-on **Configuration** page. The add-on then exposes `http://<HA-host>:7681`; it opens at `/config` with the `hermes` command on `PATH`, so run commands such as `hermes doctor`, `hermes update`, or `hermes gateway status`.
 
 This service is **disabled by default**, runs as the unprivileged `hermes` user, and keeps the configured shell credential only in the add-on configuration plus a temporary runtime file. It is direct LAN HTTP access, so do not expose port 7681 to the internet; use VPN/Tailscale for remote access.
 

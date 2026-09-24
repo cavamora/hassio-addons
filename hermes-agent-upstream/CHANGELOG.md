@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.8
+
+- Fix the browser shell launcher: the base image login shell reset `PATH`, hiding the Hermes CLI. The shell now opens in `/config` with `/opt/hermes/bin` available.
+
 ## 0.3.7
 
 - Add an optional, authenticated browser shell on TCP `7681` for administrative Hermes commands such as `hermes doctor` and `hermes update`. It is disabled by default and requires an explicit username and password in add-on Configuration.

@@ -20,4 +20,4 @@ exec s6-setuidgid hermes /usr/local/bin/ttyd \
     -i 0.0.0.0 \
     -p 7681 \
     -c "$username:$password" \
-    env PATH="/opt/hermes/bin:$PATH" /bin/bash -l
+    /usr/local/bin/hermes-browser-shell
