@@ -35,6 +35,15 @@ RUN arch="$(dpkg --print-architecture)"; \
     chmod 0755 /usr/local/bin/ttyd; \
     /usr/local/bin/ttyd --version
 
+# Home Assistant Ingress forwards its dynamic base route in X-Ingress-Path,
+# while the upstream dashboard only recognizes X-Forwarded-Prefix. Teach both
+# SPA asset rewriting and authenticated redirect handling to accept HA's header.
+RUN sed -i 's|request.headers.get("x-forwarded-prefix")|request.headers.get("x-forwarded-prefix") or request.headers.get("x-ingress-path")|g' \
+        /opt/hermes/hermes_cli/web_server_dashboard.py \
+        /opt/hermes/hermes_cli/dashboard_auth/prefix.py \
+    && grep -F 'request.headers.get("x-ingress-path")' /opt/hermes/hermes_cli/web_server_dashboard.py \
+    && grep -F 'request.headers.get("x-ingress-path")' /opt/hermes/hermes_cli/dashboard_auth/prefix.py
+
 COPY rootfs/ /
 RUN chmod 0755 \
         /etc/cont-init.d/00-ha-hermes-home \

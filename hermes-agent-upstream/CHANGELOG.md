@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.9
+
+- Make the upstream Dashboard recognize Home Assistant Ingress's `X-Ingress-Path` header for SPA assets, WebSocket/API base paths, and auth redirects. This fixes the blank/404 panel caused by absolute asset URLs resolving at Home Assistant's root.
+
 ## 0.3.8
 
 - Fix the browser shell launcher: the base image login shell reset `PATH`, hiding the Hermes CLI. The shell now opens in `/config` with `/opt/hermes/bin` available.
