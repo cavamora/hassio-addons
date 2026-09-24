@@ -9,6 +9,7 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 - Uses only this add-on's private `/config/.hermes` persistent state. It does not mount, read, or copy another add-on's private configuration volume.
 - Keeps the upstream installation immutable and separate from persistent state.
 - Provides a Home Assistant Ingress link to the official Hermes Dashboard.
+- Can provide Hermes with native Home Assistant entity/service tools through the add-on's scoped Core API token, held only in the runtime environment.
 
 ## Ingress dashboard
 
@@ -20,6 +21,12 @@ A deliberately thin Home Assistant OS add-on wrapper around the official [`nousr
 Home Assistant Ingress authenticates access to Home Assistant, but the upstream dashboard also requires its own authentication when it binds outside loopback. The add-on converts the password into a hash through Hermes' supported configuration writer; it does not print or write the raw password into `/config/.hermes`. The wrapper also translates Home Assistant's Ingress base-path header for the upstream SPA so its assets and API calls remain inside the Ingress route.
 
 If `dashboard_password` is blank, the dashboard remains disabled and the Ingress link intentionally has no backend.
+
+## Home Assistant entities and services
+
+`homeassistant_tools_enabled` defaults to `true`. The add-on receives a short-lived Supervisor token because it declares Home Assistant Core API access, then passes it to Hermes only through `/run` as `HASS_TOKEN` with `HASS_URL=http://supervisor/core`. It is never written to persistent `/config/.hermes` state.
+
+This enables the native Hermes Home Assistant tools for listing entities, reading state, listing services, and calling allowed services. It does **not** enable the Supervisor API (`hassio_api` remains disabled). Set the option to `false`, save, and restart the add-on to remove the token and hide those tools.
 
 ### Interactive terminal
 

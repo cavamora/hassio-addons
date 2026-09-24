@@ -1,5 +1,5 @@
 name: Hermes Agent Upstream
-version: 0.3.11
+version: 0.3.12
 slug: hermes_agent_upstream
 description: Minimal HAOS wrapper around the official NousResearch Hermes Agent image
 url: https://github.com/cavamora/hassio-addons/tree/main/hermes-agent-upstream
@@ -9,6 +9,7 @@ arch:
 startup: application
 boot: auto
 init: false
+homeassistant_api: true
 panel_icon: mdi:robot-outline
 panel_title: Hermes Agent
 map:
@@ -28,6 +29,7 @@ ports_description:
 options:
   dashboard_username: hermes
   dashboard_password: ""
+  homeassistant_tools_enabled: true
   dashboard_terminal: true
   shell_terminal_enabled: false
   shell_terminal_username: hermes
@@ -35,6 +37,7 @@ options:
 schema:
   dashboard_username: str
   dashboard_password: password
+  homeassistant_tools_enabled: bool
   dashboard_terminal: bool
   shell_terminal_enabled: bool
   shell_terminal_username: str

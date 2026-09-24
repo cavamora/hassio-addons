@@ -45,6 +45,8 @@ A minimal HAOS wrapper around the official [`nousresearch/hermes-agent`](https:/
 
 Hermes can work with HAOS `/media` and `/share` as explicit read/write mounts. The wrapper grants its unprivileged service user access at those two mount roots without recursively changing existing files; other add-ons' private volumes stay read-only. Its authenticated Dashboard has a configurable embedded Hermes TUI terminal, with a separately opt-in authenticated shell on port `7681` for operator commands.
 
+The add-on also supports native Hermes Home Assistant entity and service tools through Home Assistant's scoped Core API. This is enabled by default, uses the transient add-on token only at runtime, and never stores that token in persistent Hermes state; it does not grant Supervisor API access.
+
 This repository follows the local HAOS wrapper conventions:
 
 - persistent app state under `/data` where relevant;

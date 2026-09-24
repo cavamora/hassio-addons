@@ -11,6 +11,51 @@ printf '%s' "$TARGET" > /run/s6/container_environment/HERMES_HOME
 printf '%s' "$TARGET:/media:/share" > /run/s6/container_environment/HERMES_WRITE_SAFE_ROOT
 printf '%s' '/config' > /run/s6/container_environment/HOME
 
+# Home Assistant grants this add-on a short-lived Supervisor token when
+# `homeassistant_api: true` is declared in config.yaml. Expose that token only
+# through the s6 runtime environment for Hermes' native HA tools; never copy it
+# to the persistent Hermes .env/config state or emit it in logs. Hermes appends
+# `/api/...` itself, hence the `/core` base rather than `/core/api` here.
+python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+env_dir = Path('/run/s6/container_environment')
+token_target = env_dir / 'HASS_TOKEN'
+url_target = env_dir / 'HASS_URL'
+try:
+    options = json.loads(Path('/data/options.json').read_text(encoding='utf-8'))
+except (OSError, ValueError):
+    options = {}
+
+enabled = options.get('homeassistant_tools_enabled', True) is True
+token = ''
+if enabled:
+    for name in ('SUPERVISOR_TOKEN', 'HASSIO_TOKEN'):
+        candidate = env_dir / name
+        if candidate.exists():
+            token = candidate.read_text(encoding='utf-8').strip()
+            if token:
+                break
+
+if token:
+    url_target.write_text('http://supervisor/core', encoding='utf-8')
+    token_target.write_text(token, encoding='utf-8')
+    os.chmod(url_target, 0o600)
+    os.chmod(token_target, 0o600)
+    print('[ha-hermes] Native Home Assistant entity/service tools enabled through the Supervisor Core API.', flush=True)
+else:
+    url_target.write_text('', encoding='utf-8')
+    token_target.write_text('', encoding='utf-8')
+    os.chmod(url_target, 0o600)
+    os.chmod(token_target, 0o600)
+    if enabled:
+        print('[ha-hermes] WARNING: Home Assistant tools requested but no Supervisor token is available.', flush=True)
+    else:
+        print('[ha-hermes] Home Assistant entity/service tools disabled by add-on configuration.', flush=True)
+PY
+
 # The Dashboard Chat tab is an embedded Hermes TUI backed by a PTY. Keep it
 # configurable at the HA add-on boundary and disabled only when requested.
 terminal_enabled="$(python3 - <<'PY'

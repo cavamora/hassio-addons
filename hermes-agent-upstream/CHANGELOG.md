@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.12
+
+- Add opt-in native Hermes Home Assistant tools backed by the add-on's short-lived Supervisor Core API token. The token stays in `/run` only and is never copied into persistent Hermes state.
+- Enable the scoped `homeassistant_api` capability; access to the Supervisor API itself remains disabled.
+
 ## 0.3.11
 
 - Remove the completed one-time import from the former Hermes add-on and the now-unneeded `all_addon_configs:ro` mount.
