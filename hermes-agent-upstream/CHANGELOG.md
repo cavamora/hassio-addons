@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.13
+
+- Add `hermes-storage`, a confined root publisher for `move` operations from `/share/<path>` to `/media/<path>` and explicit `remove` operations under `/media`.
+- Keep the Hermes gateway and browser terminal unprivileged; the publisher accepts only validated relative paths, rejects symlinks/traversal, and exposes no root shell.
+
 ## 0.3.12
 
 - Add opt-in native Hermes Home Assistant tools backed by the add-on's short-lived Supervisor Core API token. The token stays in `/run` only and is never copied into persistent Hermes state.

@@ -120,6 +120,14 @@ for shared_root in /media /share; do
     fi
 done
 
+# Root-only storage publisher queue. Hermes may submit confined move/remove
+# requests, while only the separate publisher service writes the CIFS media mount.
+queue=/run/hermes-storage
+mkdir -p "$queue/requests" "$queue/results"
+chown root:hermes "$queue" "$queue/requests" "$queue/results"
+chmod 2750 "$queue" "$queue/results"
+chmod 2770 "$queue/requests"
+
 # Ensure the persisted state is accessible to the unprivileged upstream service.
 if [ -d "$TARGET" ] && find "$TARGET" -xdev \( ! -uid 10000 -o ! -gid 10000 \) -print -quit | grep -q .; then
     chown -R 10000:10000 "$TARGET"

@@ -48,3 +48,14 @@ The add-on mounts the normal HAOS shared folders read/write:
 Hermes file tools may read and write both paths. Other add-ons' private configuration volumes remain read-only and are not exposed as a writable share.
 
 The add-on makes the two mount roots group-writable for the unprivileged Hermes service and applies the setgid bit so new folders inherit that group. It intentionally does not recursively change ownership or modes under existing media/shared folders.
+
+### Confined storage publisher
+
+`hermes-storage` lets the unprivileged Hermes runtime request two filesystem operations without becoming root:
+
+```bash
+hermes-storage move [--replace] MEDIA/path/to/file
+hermes-storage remove [--recursive] MEDIA/path/to/file
+```
+
+`move` copies `/share/MEDIA/path/to/file` to `/media/MEDIA/path/to/file`, publishes by atomic rename on the destination filesystem, then removes the source. `remove` acts only under `/media`. Both commands reject absolute paths, `..`, and symlinks; the root publisher accepts only these two operations through a local queue and does not expose a shell, arbitrary command execution, or access outside `/share` and `/media`. Existing destinations require `--replace`; directory removal requires `--recursive`.

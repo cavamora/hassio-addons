@@ -1,0 +1,4 @@
+#!/command/with-contenv sh
+# Deliberately stays root: it only runs the path-confined storage protocol.
+set -eu
+exec /usr/bin/python3 /usr/local/lib/hermes-storage-publisher.py --serve

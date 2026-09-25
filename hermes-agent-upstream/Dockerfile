@@ -49,7 +49,10 @@ RUN chmod 0755 \
         /etc/cont-init.d/00-ha-hermes-home \
         /etc/cont-init.d/90-ha-dashboard-auth \
         /etc/services.d/hermes-shell-terminal/run \
-        /usr/local/bin/hermes-browser-shell
+        /etc/services.d/hermes-storage-publisher/run \
+        /usr/local/bin/hermes-browser-shell \
+        /usr/local/bin/hermes-storage \
+        /usr/local/lib/hermes-storage-publisher.py
 
 # HA Add-ons start an image with its default command. The upstream image's empty
 # CMD launches an interactive CLI, which exits immediately without a TTY and

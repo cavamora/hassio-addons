@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""Submit confined storage publication requests to the root helper."""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import sys
+import tempfile
+import time
+import uuid
+from pathlib import Path, PurePosixPath
+
+QUEUE_ROOT = Path(os.environ.get("HERMES_STORAGE_QUEUE_ROOT", "/run/hermes-storage"))
+REQUESTS = QUEUE_ROOT / "requests"
+RESULTS = QUEUE_ROOT / "results"
+
+
+def validate_path(value: str) -> str:
+    if not value or "\\" in value or "\x00" in value:
+        raise argparse.ArgumentTypeError("path must be a non-empty relative POSIX path")
+    path = PurePosixPath(value)
+    if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
+        raise argparse.ArgumentTypeError("path traversal is not allowed")
+    return path.as_posix()
+
+
+def submit(request: dict) -> Path:
+    if not REQUESTS.is_dir() or not RESULTS.is_dir():
+        raise RuntimeError("storage publisher is unavailable")
+    request_id = request["id"]
+    fd, temporary = tempfile.mkstemp(prefix=f".{request_id}.", suffix=".tmp", dir=REQUESTS)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(request, stream, ensure_ascii=False, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        target = REQUESTS / f"{request_id}.json"
+        os.replace(temporary, target)
+        return RESULTS / f"{request_id}.json"
+    finally:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+
+
+def wait_for_result(path: Path, timeout: float) -> dict:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if path.exists():
+            with path.open("r", encoding="utf-8") as stream:
+                return json.load(stream)
+        time.sleep(0.1)
+    raise TimeoutError(f"publisher did not answer within {timeout:g}s")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="hermes-storage")
+    parser.add_argument("--timeout", type=float, default=120, help="seconds to wait for completion")
+    commands = parser.add_subparsers(dest="operation", required=True)
+    move_parser = commands.add_parser("move", help="move /share/<path> to /media/<path>")
+    move_parser.add_argument("--replace", action="store_true", help="replace an existing destination")
+    move_parser.add_argument("path", type=validate_path)
+    remove_parser = commands.add_parser("remove", help="remove /media/<path>")
+    remove_parser.add_argument("--recursive", action="store_true", help="allow directory removal")
+    remove_parser.add_argument("path", type=validate_path)
+    args = parser.parse_args()
+    if args.timeout <= 0:
+        parser.error("--timeout must be positive")
+
+    request = {"id": uuid.uuid4().hex, "operation": args.operation, "path": args.path}
+    if args.operation == "move":
+        request["replace"] = args.replace
+    else:
+        request["recursive"] = args.recursive
+    try:
+        result = wait_for_result(submit(request), args.timeout)
+    except Exception as exc:
+        print(f"hermes-storage: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1
+    if not result.get("ok"):
+        print(f"hermes-storage: {result.get('error', 'publisher failed')}", file=sys.stderr)
+        return 1
+    print(json.dumps(result["result"], ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
