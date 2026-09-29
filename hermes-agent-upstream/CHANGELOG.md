@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.16
+
+- Fix Dashboard password and OAuth login through Home Assistant Ingress/Nabu Casa. Login requests and post-login redirects now retain the dynamic Ingress prefix instead of escaping to the Home Assistant root.
+
 ## 0.3.15
 
 - Remove the `dashboard_terminal` option and its wrapper startup logic. The Dashboard no longer receives a configurable embedded-TUI toggle.
