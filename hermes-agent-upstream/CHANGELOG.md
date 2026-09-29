@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.14
+
+- Update the pinned official Hermes Docker image from `v2026.9.21` (Hermes Agent 0.21.4) to stable upstream `v2026.9.24` (Hermes Agent 0.21.5).
+- Revalidated the wrapper's persistent-state, Dashboard/Ingress, and shell patch targets against the new upstream image source.
+
 ## 0.3.13
 
 - Add `hermes-storage`, a confined root publisher for `move` operations from `/share/<path>` to `/media/<path>` and explicit `remove` operations under `/media`.
