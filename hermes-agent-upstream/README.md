@@ -28,10 +28,6 @@ If `dashboard_password` is blank, the dashboard remains disabled and the Ingress
 
 This enables the native Hermes Home Assistant tools for listing entities, reading state, listing services, and calling allowed services. It does **not** enable the Supervisor API (`hassio_api` remains disabled). Set the option to `false`, save, and restart the add-on to remove the token and hide those tools.
 
-### Interactive terminal
-
-`dashboard_terminal` controls the Dashboard **Chat** tab. When enabled, it embeds the official Hermes TUI through a browser PTY; it is not a root shell and runs as the unprivileged `hermes` service user. The Dashboard's existing authentication remains required. Disable the toggle to remove that terminal surface.
-
 ### Browser shell
 
 For a real shell, enable `shell_terminal_enabled` and set a non-empty `shell_terminal_username` and `shell_terminal_password` in the add-on **Configuration** page. The add-on then exposes `http://<HA-host>:7681`; it opens at `/config` with the `hermes` command on `PATH`, so run commands such as `hermes doctor`, `hermes update`, or `hermes gateway status`.

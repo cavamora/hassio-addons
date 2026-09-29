@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.15
+
+- Remove the `dashboard_terminal` option and its wrapper startup logic. The Dashboard no longer receives a configurable embedded-TUI toggle.
+
 ## 0.3.14
 
 - Update the pinned official Hermes Docker image from `v2026.9.21` (Hermes Agent 0.21.4) to stable upstream `v2026.9.24` (Hermes Agent 0.21.5).

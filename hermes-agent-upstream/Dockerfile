@@ -17,9 +17,7 @@ RUN sed -i \
     && grep -F 'export HOME=/config' /opt/hermes/docker/main-wrapper.sh \
     && grep -F 'export HOME=/config' /opt/hermes/docker/hermes-exec-shim.sh \
     && grep -F 'HERMES_HOME="/config/.hermes"' /opt/hermes/docker/stage2-hook.sh \
-    && grep -F 'export HOME=/config' /etc/s6-overlay/s6-rc.d/dashboard/run \
-    && sed -i 's|_DASHBOARD_EMBEDDED_CHAT_ENABLED = True|_DASHBOARD_EMBEDDED_CHAT_ENABLED = os.getenv("HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}|' /opt/hermes/hermes_cli/web_server.py \
-    && grep -F 'HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED' /opt/hermes/hermes_cli/web_server.py
+    && grep -F 'export HOME=/config' /etc/s6-overlay/s6-rc.d/dashboard/run
 
 # Optional browser shell, pinned to an upstream ttyd release and verified per
 # architecture. It runs only when the add-on's shell_terminal_enabled option is
