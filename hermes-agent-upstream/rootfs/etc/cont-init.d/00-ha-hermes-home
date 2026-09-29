@@ -56,25 +56,6 @@ else:
         print('[ha-hermes] Home Assistant entity/service tools disabled by add-on configuration.', flush=True)
 PY
 
-# The Dashboard Chat tab is an embedded Hermes TUI backed by a PTY. Keep it
-# configurable at the HA add-on boundary and disabled only when requested.
-terminal_enabled="$(python3 - <<'PY'
-import json
-from pathlib import Path
-try:
-    options = json.loads(Path('/data/options.json').read_text(encoding='utf-8'))
-except (OSError, ValueError):
-    options = {}
-print('1' if options.get('dashboard_terminal', True) is True else '0')
-PY
-)"
-printf '%s' "$terminal_enabled" > /run/s6/container_environment/HERMES_DASHBOARD_EMBEDDED_CHAT_ENABLED
-if [ "$terminal_enabled" = 1 ]; then
-    echo "[ha-hermes] Dashboard interactive terminal enabled." >&2
-else
-    echo "[ha-hermes] Dashboard interactive terminal disabled by add-on configuration." >&2
-fi
-
 # The browser shell is deliberately separate from the Dashboard TUI. It is
 # disabled unless the user supplies an explicit password; its credentials are
 # written only to /run (tmpfs), never into Hermes state or logs.
