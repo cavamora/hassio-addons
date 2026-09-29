@@ -42,6 +42,20 @@ RUN sed -i 's|request.headers.get("x-forwarded-prefix")|request.headers.get("x-f
     && grep -F 'request.headers.get("x-ingress-path")' /opt/hermes/hermes_cli/web_server_dashboard.py \
     && grep -F 'request.headers.get("x-ingress-path")' /opt/hermes/hermes_cli/dashboard_auth/prefix.py
 
+# The server already receives Home Assistant's Ingress prefix, but the upstream
+# login page uses root-relative URLs. Those escape /api/hassio_ingress/<token>/
+# on password/OAuth login. Keep the login requests and post-login target under
+# the same dynamic prefix while preserving direct :9119 access.
+RUN sed -i \
+        -e 's|href="/auth/login?provider=|href="auth/login?provider=|' \
+        -e "s|fetch('/auth/password-login'|fetch('auth/password-login'|" \
+        /opt/hermes/hermes_cli/dashboard_auth/login_page.py \
+    && sed -i 's|return _validate_post_login_target(next_raw) or "/", False|return f"{_prefix(request)}{(_validate_post_login_target(next_raw) or "/")}", False|' \
+        /opt/hermes/hermes_cli/dashboard_auth/routes.py \
+    && grep -F 'href="auth/login?provider=' /opt/hermes/hermes_cli/dashboard_auth/login_page.py \
+    && grep -F "fetch('auth/password-login'" /opt/hermes/hermes_cli/dashboard_auth/login_page.py \
+    && grep -F 'return f"{_prefix(request)}{(_validate_post_login_target(next_raw) or "/")}", False' /opt/hermes/hermes_cli/dashboard_auth/routes.py
+
 COPY rootfs/ /
 RUN chmod 0755 \
         /etc/cont-init.d/00-ha-hermes-home \
